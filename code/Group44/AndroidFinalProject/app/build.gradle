@@ -36,6 +36,12 @@ dependencies {
     implementation files('libs/xUtils-2.6.14.jar')
     implementation files('libs/gson-2.3.1.jar')
     implementation project(':ViewPagerIndicator-master')
+
+
+    // add circleImage View
+    implementation 'de.hdodenhof:circleimageview:3.0.0'
+
+
 }
 // 在MobSDK的扩展中注册ShareSDK的相关信息
 MobSDK {
