@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/guideView"
+    android:background="#fafafa"
+    tools:context=".FullscreenActivity">
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:src="@drawable/logo_gray"
+        android:alpha="0.2"/>
+
+    <!-- The primary full-screen view. This can be replaced with whatever view
+         is needed to present your content, e.g. VideoView, SurfaceView,
+         TextureView, etc. -->
+    <TextView
+        android:id="@+id/fullscreen_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:keepScreenOn="true"
+        android:text="@string/dummy_content"
+        android:visibility="gone"/>
+        <!--Define by myself-->
+    <android.support.constraint.ConstraintLayout
+        android:layout_height="match_parent"
+        android:layout_width="match_parent">
+        <android.support.constraint.ConstraintLayout
+            android:layout_height="match_parent"
+            android:id="@+id/marjor"
+            android:layout_width="match_parent">
+            <ImageView
+                android:id="@+id/img1"
+                android:visibility="visible"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:layout_marginBottom="15dp"
+                android:src="@drawable/first"/>
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/usernameSet"
+                android:visibility="gone"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                >
+                <TextView
+                    android:id="@+id/hintUsername"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="20dp"
+                    android:layout_width="wrap_content"
+                    android:text="请输入您的名字:"
+                    android:textSize="30sp"
+                    android:layout_marginBottom="10dp"
+                    android:textColor="@color/gray"
+                    app:layout_constraintBottom_toTopOf="@id/username"/>
+                <EditText
+                    android:id="@+id/username"
+                    android:layout_marginLeft="80dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginRight="30dp"
+                    android:textCursorDrawable="@null"
+                    android:background="@null"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="30dp"
+                    android:maxLength="7"
+                    android:maxLines="1"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/hintUsername"/>
+                <ImageView
+                    android:layout_width="30sp"
+                    android:layout_height="30sp"
+                    android:layout_marginRight="10dp"
+                    app:layout_constraintTop_toTopOf="@id/username"
+                    android:layout_marginTop="10dp"
+                    app:layout_constraintRight_toLeftOf="@id/username"
+                    android:src="@drawable/yonghu"
+                    />
+                <View
+                    app:layout_constraintTop_toBottomOf="@id/username"
+                    android:layout_marginTop="5dp"
+                    android:layout_height="2px"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="30dp"
+                    android:layout_width="match_parent"
+                    android:background="@color/gray"
+                    />
+                <Button
+                    android:id="@+id/usernameOKbutton"
+                    android:visibility="invisible"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/username"
+                    android:layout_marginTop="30dp"
+                    android:text="OK"
+                    android:textColor="@color/gray"
+                    android:background="@null"
+                    android:textSize="18sp"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:layout_marginRight="20dp"/>
+
+
+            </android.support.constraint.ConstraintLayout>
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/welcomeSet"
+                android:visibility="gone"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/welcomeHint"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:text="很高兴认识您："
+                    android:textSize="30sp"
+                    android:textColor="@color/gray"
+                    />
+                <TextView
+                    app:layout_constraintTop_toBottomOf="@id/welcomeHint"
+                    android:layout_marginTop="10dp"
+                    android:id="@+id/welcomeUsername"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:text="aaa"
+                    android:textSize="40sp"
+                    android:textColor="#000000"
+                    />
+            </android.support.constraint.ConstraintLayout>
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/choiceSet"
+                android:visibility="visible"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                >
+                <TextView
+                    android:id="@+id/hintChoice"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="20dp"
+                    android:layout_width="wrap_content"
+                    android:text=""
+                    android:textSize="30sp"
+                    android:layout_marginBottom="10dp"
+                    android:textColor="@color/gray"
+                    />
+                <Button
+                    android:id="@+id/choiceOKButton"
+                    android:visibility="invisible"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:text="OK"
+                    android:textColor="@color/gray"
+                    android:background="@null"
+                    android:textSize="18sp"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:layout_marginRight="20dp"/>
+
+
+            </android.support.constraint.ConstraintLayout>
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_height="12dp"
+            android:layout_width="30dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="10dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent">
+            <ImageView
+                android:id="@+id/bottomBtn1"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:src="@drawable/fullcircle"
+                />
+            <ImageView
+                android:id="@+id/bottomBtn2"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:src="@drawable/emptycircle"
+                app:layout_constraintRight_toRightOf="parent"
+                />
+        </android.support.constraint.ConstraintLayout>
+
+
+    </android.support.constraint.ConstraintLayout>
+
+
+
+
+
+
+
+
+
+
+
+    <!--Define by myself-->
+    <!-- This FrameLayout insets its children based on system windows using
+         android:fitsSystemWindows. -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
+
+        <LinearLayout
+            android:id="@+id/fullscreen_content_controls"
+            style="?metaButtonBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:background="@color/black_overlay"
+            android:orientation="horizontal"
+            tools:ignore="UselessParent">
+
+        </LinearLayout>
+    </FrameLayout>
+
+</FrameLayout>
