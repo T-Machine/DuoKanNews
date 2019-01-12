@@ -3,7 +3,11 @@ package com.example.group44.newscollection;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.CardView;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -14,16 +18,23 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.example.group44.newscollection.JSON.Feed;
 import com.example.group44.newscollection.JSON.JsonRootBean;
+import com.example.group44.newscollection.adapter.MyRecyclerViewAdapter;
+import com.example.group44.newscollection.adapter.MyViewHolder;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
+import com.lidroid.xutils.BitmapUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -36,13 +47,60 @@ public class MainActivity extends AppCompatActivity
 
     private static final String TAG = "OKHTTP CLIENT ";
     static String url = "http://newsapi.sina.cn/?resource=feed&lDid=a9f1b781-e891-4198-af53-1fb74ab3ad1b&oldChwm=&upTimes=0&city=&prefetch=99&channel=news_toutiao&link=&ua=Xiaomi-MI+6__sinanews__6.8.8__android__8.0.0&deviceId=aeaaa73c147faf4e&connectionType=2&resolution=1080x1920&weiboUid=&mac=02%3A00%3A00%3A00%3A00%3A00&replacedFlag=0&osVersion=8.0.0&chwm=14010_0001&pullTimes=1&weiboSuid=&andId=301aa36754a2692e&from=6068895012&sn=8a8a0650&behavior=auto&aId=&localSign=a_22eb3a47-189e-44ac-be6d-81ef8ac635b6&deviceIdV1=aeaaa73c147faf4e&todayReqTime=0&osSdk=26&abver=1527581432688&listCount=0&accessToken=&downTimes=0&abt=313_302_297_281_277_275_269_255_253_251_249_242_237_230_228_226_217_215_207_203_191_189_187_171_153_149_143_141_139_135_128_113_111_57_45_38_21_18_16_13&lastTimestamp=0&pullDirection=down&seId=e70c98e4da&imei=868030036302089&deviceModel=Xiaomi__Xiaomi__MI+6&location=0.0%2C0.0&loadingAdTimestamp=0&urlSign=befedbd988&rand=926";
-
     // 解析json的结果
     JsonRootBean bean;
+
+    RecyclerView recyclerView;
+    MyRecyclerViewAdapter myAdapter;
+    private BitmapUtils mBitmapUtils;
+    Boolean isCardShow = false;
+    TextView blackShodow;
+    ViewPager view_pager;
+    PagerAdapter view_pager_adapter;
+    private ArrayList<Feed> mNewsList;
+    private List<View> pages;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        isCardShow = false;
+        blackShodow = findViewById(R.id.blackShodow);
+        view_pager = findViewById(R.id.view_pager);
+
+        mBitmapUtils = new BitmapUtils(this);
+        mNewsList = new ArrayList<>();
+        myAdapter = new MyRecyclerViewAdapter<Feed>(this, R.layout.item_recommend, mNewsList) {
+            @Override
+            public void convert(MyViewHolder holder, Feed s) {
+                ImageView img = holder.getView(R.id.iv_icon);
+                TextView title = holder.getView(R.id.tv_item_title);
+                TextView time = holder.getView(R.id.tv_item_date);
+                title.setText(s.getTitle());
+                time.setText(s.getPubDate());
+                mBitmapUtils.display(img, s.getKpic());
+            }
+        };
+        myAdapter.setOnItemClickListener(new MyRecyclerViewAdapter.OnItemClickListener() {
+            @Override
+            public void onClick(int position) {
+                // 处理单击事件
+                if(isCardShow == true) {
+                    return;
+                }
+                isCardShow = true;
+
+                //previewCard.setVisibility(View.VISIBLE);
+                blackShodow.setVisibility(View.VISIBLE);
+                view_pager.setVisibility(View.VISIBLE);
+
+                //view pager定位到当前item
+                view_pager.setCurrentItem(position);
+            }
+        });
+
 
         // 获取json
         OkHttpClient okHttpClient = new OkHttpClient();
@@ -62,6 +120,11 @@ public class MainActivity extends AppCompatActivity
                 Gson gson = new Gson();//创建Gson对象
                 bean = gson.fromJson(response.body().string(), JsonRootBean.class);//解析
                 Log.i("sss","Json gotten success!");
+
+
+
+
+
             }
         });
 
@@ -88,6 +151,19 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+
+        //----------------------------------
+        //推荐内容部分
+        //----------------------------------
+
+
+
+
+
+
+
+
     }
 
     @Override
