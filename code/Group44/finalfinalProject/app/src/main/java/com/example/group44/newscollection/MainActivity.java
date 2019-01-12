@@ -61,7 +61,8 @@ public class MainActivity extends AppCompatActivity
             public void onResponse(Call call, Response response) throws IOException {
                 Gson gson = new Gson();//创建Gson对象
                 bean = gson.fromJson(response.body().string(), JsonRootBean.class);//解析
-                Log.i("sss","Json gotten success!");
+                Log.i("gson: ","Json gotten success!");
+//                WordsProcess wps = new WordsProcess(bean);
             }
         });
 

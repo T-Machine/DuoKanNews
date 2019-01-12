@@ -40,6 +40,7 @@
                 android:layout_width="match_parent"
                 android:layout_marginBottom="15dp"
                 android:src="@drawable/first"/>
+            <!--用户名设置-->
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/usernameSet"
                 android:visibility="gone"
@@ -67,6 +68,7 @@
                     android:layout_marginRight="30dp"
                     android:textCursorDrawable="@null"
                     android:background="@null"
+                    android:singleLine="true"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="30dp"
@@ -108,6 +110,7 @@
 
 
             </android.support.constraint.ConstraintLayout>
+            <!--欢迎界面-->
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/welcomeSet"
                 android:visibility="gone"
@@ -128,7 +131,7 @@
                     />
                 <TextView
                     app:layout_constraintTop_toBottomOf="@id/welcomeHint"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="5dp"
                     android:id="@+id/welcomeUsername"
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
@@ -137,9 +140,10 @@
                     android:textColor="#000000"
                     />
             </android.support.constraint.ConstraintLayout>
+            <!--标签设置-->
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/choiceSet"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -152,26 +156,133 @@
                     android:layout_height="wrap_content"
                     android:paddingLeft="20dp"
                     android:layout_width="wrap_content"
-                    android:text=""
+                    android:text="选择喜欢的新闻类型:"
                     android:textSize="30sp"
                     android:layout_marginBottom="10dp"
                     android:textColor="@color/gray"
                     />
+                <android.support.constraint.ConstraintLayout
+                    android:layout_height="wrap_content"
+                    android:id="@+id/choiceBoxSet"
+                    app:layout_constraintTop_toBottomOf="@id/hintChoice"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:layout_marginTop="30dp"
+                    android:layout_width="wrap_content">
+                    <CheckBox
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        android:id="@+id/insideCountury"
+                        android:button="@drawable/checkbox"
+                        android:textSize="20sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="国内" />
+                    <CheckBox
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintLeft_toRightOf="@id/insideCountury"
+                        android:id="@+id/outsideCountury"
+                        android:layout_marginLeft="40dp"
+                        android:textSize="20sp"
+                        android:button="@drawable/checkbox"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="国际" />
+                    <CheckBox
+                        app:layout_constraintTop_toBottomOf="@id/insideCountury"
+                        app:layout_constraintLeft_toLeftOf="@id/insideCountury"
+                        android:id="@+id/politics"
+                        android:layout_marginTop="15dp"
+                        android:button="@drawable/checkbox"
+                        android:layout_width="wrap_content"
+                        android:textSize="20sp"
+                        android:layout_height="wrap_content"
+                        android:text="政务" />
+                    <CheckBox
+                        app:layout_constraintTop_toBottomOf="@id/outsideCountury"
+                        app:layout_constraintLeft_toLeftOf="@id/outsideCountury"
+                        android:id="@+id/army"
+                        android:button="@drawable/checkbox"
+                        android:layout_marginTop="15dp"
+                        android:layout_width="wrap_content"
+                        android:textSize="20sp"
+                        android:layout_height="wrap_content"
+                        android:text="军事" />
+                    <CheckBox
+                        app:layout_constraintTop_toBottomOf="@id/politics"
+                        app:layout_constraintLeft_toLeftOf="@id/politics"
+                        android:id="@+id/sports"
+                        android:button="@drawable/checkbox"
+                        android:layout_marginTop="15dp"
+                        android:layout_width="wrap_content"
+                        android:textSize="20sp"
+                        android:layout_height="wrap_content"
+                        android:text="体育" />
+                    <CheckBox
+                        app:layout_constraintLeft_toLeftOf="@id/army"
+                        app:layout_constraintTop_toBottomOf="@id/army"
+                        android:id="@+id/entertain"
+                        android:button="@drawable/checkbox"
+                        android:layout_marginTop="15dp"
+                        android:layout_width="wrap_content"
+                        android:textSize="20sp"
+                        android:layout_height="wrap_content"
+                        android:text="娱乐" />
+                    <CheckBox
+                        app:layout_constraintTop_toBottomOf="@id/sports"
+                        app:layout_constraintLeft_toLeftOf="@id/sports"
+                        android:id="@+id/tech"
+                        android:button="@drawable/checkbox"
+                        android:layout_width="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:textSize="20sp"
+                        android:layout_height="wrap_content"
+                        android:text="科技" />
+                    <CheckBox
+                        app:layout_constraintLeft_toLeftOf="@id/entertain"
+                        app:layout_constraintTop_toBottomOf="@id/entertain"
+                        android:id="@+id/finance"
+                        android:button="@drawable/checkbox"
+                        android:layout_width="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:textSize="20sp"
+                        android:layout_height="wrap_content"
+                        android:text="财经" />
+                </android.support.constraint.ConstraintLayout>
                 <Button
                     android:id="@+id/choiceOKButton"
-                    android:visibility="invisible"
+                    android:visibility="visible"
+                    app:layout_constraintTop_toBottomOf="@+id/choiceBoxSet"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="30dp"
+                    android:layout_marginTop="10dp"
                     android:text="OK"
                     android:textColor="@color/gray"
                     android:background="@null"
                     android:textSize="18sp"
                     app:layout_constraintRight_toRightOf="parent"
                     android:layout_marginRight="20dp"/>
-
-
             </android.support.constraint.ConstraintLayout>
+            <!--完成-->
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/successSet"
+                android:visibility="gone"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:text="好好享受吧！"
+                    android:textSize="40sp"
+                    android:textColor="#000000"
+                    />
+            </android.support.constraint.ConstraintLayout>
+
         </android.support.constraint.ConstraintLayout>
 
         <android.support.constraint.ConstraintLayout

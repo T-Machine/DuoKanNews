@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
+import android.view.animation.AnimationSet;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -38,10 +39,12 @@ public class NewsDetail extends AppCompatActivity {
                 //动作
                 AlphaAnimation disappearAnimation = new AlphaAnimation(1, 0);
                 disappearAnimation.setDuration(300);
-                v.startAnimation(disappearAnimation);
                 AlphaAnimation appearAnimation = new AlphaAnimation(0, 1);
                 appearAnimation.setDuration(300);
-                v.startAnimation(appearAnimation);
+                AnimationSet as = new AnimationSet(true);
+                as.addAnimation(disappearAnimation);
+                as.addAnimation(appearAnimation);
+                v.startAnimation(as);
             }
         });
 
@@ -57,13 +60,14 @@ public class NewsDetail extends AppCompatActivity {
                 myClipboard.setPrimaryClip(myClip);
                 goodView.setText("链接已复制");
                 goodView.show(v);
-                //动作
                 AlphaAnimation disappearAnimation = new AlphaAnimation(1, 0);
                 disappearAnimation.setDuration(300);
-                v.startAnimation(disappearAnimation);
                 AlphaAnimation appearAnimation = new AlphaAnimation(0, 1);
                 appearAnimation.setDuration(300);
-                v.startAnimation(appearAnimation);
+                AnimationSet as = new AnimationSet(true);
+                as.addAnimation(disappearAnimation);
+                as.addAnimation(appearAnimation);
+                v.startAnimation(as);
                 // 跳转微信
                 try {
                     Intent intent = new Intent(Intent.ACTION_MAIN);
