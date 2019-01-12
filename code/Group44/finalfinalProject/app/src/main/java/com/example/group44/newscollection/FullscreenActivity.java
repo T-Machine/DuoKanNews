@@ -395,6 +395,7 @@ public class FullscreenActivity extends AppCompatActivity {
                         // 跳转
                         Intent intent =new Intent(FullscreenActivity.this,MainActivity.class);
                         startActivity(intent);
+                        finish();
                     }
 
                     @Override
