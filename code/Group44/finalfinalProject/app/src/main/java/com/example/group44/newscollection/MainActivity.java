@@ -2,6 +2,7 @@ package com.example.group44.newscollection;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.PagerAdapter;
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity
     PagerAdapter view_pager_adapter;
     private ArrayList<Feed> mNewsList;
     private List<View> pages;
-
+    Handler handler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,8 +81,14 @@ public class MainActivity extends AppCompatActivity
                 ImageView img = holder.getView(R.id.iv_icon);
                 TextView title = holder.getView(R.id.tv_item_title);
                 TextView time = holder.getView(R.id.tv_item_date);
-                title.setText(s.getTitle());
-                time.setText(s.getPubDate());
+                if(s.getTitle() != null){
+                    title.setText(s.getTitle());
+                }
+                if(s.getPubDate() != -1){
+                    Integer i = s.getPubDate();
+                    time.setText(i.toString());
+                }
+
                 mBitmapUtils.display(img, s.getKpic());
             }
         };
@@ -124,16 +131,23 @@ public class MainActivity extends AppCompatActivity
             public void onResponse(Call call, Response response) throws IOException {
                 Gson gson = new Gson();//创建Gson对象
                 bean = gson.fromJson(response.body().string(), JsonRootBean.class);//解析
+                for(Feed e : bean.getData().getFeed()){
+                    Log.i("ssL", e.getIntro());
+                }
 
                 //----------------------
                 ///回调后的操作
                 //----------------------
-                for(int i = 0; i < 5; i ++) {
-                    myAdapter.addItem(bean.getData().getFeed().get(i));
-                }
-                myAdapter.notifyDataSetChanged();
 
-
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        for(int i = 0; i < 5; i ++) {
+                            myAdapter.addItem(bean.getData().getFeed().get(i));
+                        }
+                        myAdapter.notifyDataSetChanged();
+                    }
+                });
             }
         });
 

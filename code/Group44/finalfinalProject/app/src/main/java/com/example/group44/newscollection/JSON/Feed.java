@@ -21,7 +21,7 @@ public class Feed {
     private String pic;
     private String kpic;
     private String intro;
-    private int pubDate;
+    private int pubDate = -1;
     private String category;
     private int actionType;
     private int layoutStyle;
