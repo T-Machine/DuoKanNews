@@ -53,7 +53,7 @@
         <!--android:src="@drawable/test"-->
 
         <!--/>-->
-    <ScrollView
+    <com.example.group44.newscollection.SlowScrollview
         android:id="@+id/scroll"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
@@ -67,29 +67,57 @@
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/buttonSet"
                 app:layout_constraintBottom_toTopOf="@id/title"
-                android:layout_marginBottom="5dp"
+                android:layout_marginBottom="2dp"
                 app:layout_constraintLeft_toLeftOf="@id/title"
-                android:layout_marginLeft="25dp"
+                android:layout_marginLeft="10dp"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:orientation="horizontal"
                 >
                 <ImageView
-                    android:id="@+id/dislikeButton"
-                    android:layout_marginLeft="20dp"
-                    android:layout_height="20dp"
-                    android:layout_width="20dp"
+                    android:id="@+id/collectionBtn"
+                    android:padding="8dp"
+                    android:layout_height="40dp"
+                    android:layout_width="40dp"
                     android:scaleType="fitXY"
-                    android:src="@drawable/dislike"
+                    android:src="@drawable/gengduo"
                     />
-                <ImageView
-                    android:id="@+id/share"
-                    app:layout_constraintLeft_toRightOf="@+id/dislikeButton"
-                    android:layout_marginLeft="20dp"
-                    android:layout_height="20dp"
-                    android:layout_width="20dp"
-                    android:src="@drawable/ic_menu_share"
-                    />
+                <android.support.constraint.ConstraintLayout
+                    android:layout_height="wrap_content"
+                    app:layout_constraintLeft_toRightOf="@id/collectionBtn"
+                    android:id="@+id/buttonSubset"
+                    android:visibility="visible"
+                    android:layout_marginLeft="3dp"
+                    android:layout_width="wrap_content">
+                    <ImageView
+                        android:id="@+id/likeButton"
+                        android:layout_marginLeft="5dp"
+                        android:padding="6dp"
+                        android:layout_height="40dp"
+                        android:layout_width="40dp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/shoucang"
+                        />
+                    <ImageView
+                        android:id="@+id/dislikeButton"
+                        app:layout_constraintLeft_toRightOf="@id/likeButton"
+                        android:layout_marginLeft="3dp"
+                        android:padding="8dp"
+                        android:layout_height="40dp"
+                        android:layout_width="40dp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/buxihuan"
+                        />
+                    <ImageView
+                        android:id="@+id/share"
+                        app:layout_constraintLeft_toRightOf="@+id/dislikeButton"
+                        android:layout_marginLeft="3dp"
+                        android:padding="8dp"
+                        android:layout_height="40dp"
+                        android:layout_width="40dp"
+                        android:src="@drawable/ic_menu_share"
+                        />
+                </android.support.constraint.ConstraintLayout>
             </android.support.constraint.ConstraintLayout>
             <TextView
                 android:id="@+id/title"
@@ -151,7 +179,7 @@
                 />
         </android.support.constraint.ConstraintLayout>
 
-    </ScrollView>
+    </com.example.group44.newscollection.SlowScrollview>
 
 
 </android.support.constraint.ConstraintLayout>
