@@ -1,6 +1,10 @@
 package com.example.group44.newscollection;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -11,6 +15,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Layout;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -68,7 +73,28 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        // 获得用户名
+        SharedPreferences shared=getSharedPreferences("Username", MODE_PRIVATE);
+        //侧滑 功能
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        //获取NavigationView上的组件
+        View v = navigationView.getHeaderView(0);
+        TextView tvu = v.findViewById(R.id.gotUsername);
+        ImageView iv = v.findViewById(R.id.hostImg);
+        iv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_PICK);
+                intent.setType("image/*");
+                startActivityForResult(intent, 0);
+            }
+        });
+        String un = shared.getString("user","null");
+        Log.i("username", un);
+        CharSequence cs = un;
+        tvu.setText(cs);
         isCardShow = false;
         blackShodow = findViewById(R.id.blackShodow);
         view_pager = findViewById(R.id.view_pager);
@@ -175,9 +201,6 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
 
         //----------------------------------
         //推荐内容部分
@@ -247,5 +270,30 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (data != null) {
+            // 得到图片的全路径
+            Uri uri = data.getData();
+            //侧滑 功能
+            NavigationView navigationView = findViewById(R.id.nav_view);
+            navigationView.setNavigationItemSelectedListener(this);
+            //获取NavigationView上的组件
+            View v = navigationView.getHeaderView(0);
+            // 图片解析的配置
+            BitmapFactory.Options options = new BitmapFactory.Options();
+
+            // 不去真正解析图片，只是获取图片的宽高
+            options.inJustDecodeBounds = true;
+            ImageView hostImg = v.findViewById(R.id.hostImg);
+            hostImg.setImageURI(uri);
+
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+
     }
 }
