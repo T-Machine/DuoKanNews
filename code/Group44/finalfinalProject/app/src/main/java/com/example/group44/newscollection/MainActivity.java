@@ -7,6 +7,7 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -100,6 +101,9 @@ public class MainActivity extends AppCompatActivity
                 view_pager.setCurrentItem(position);
             }
         });
+        recyclerView = (RecyclerView)findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(myAdapter);
 
 
         // 获取json
@@ -112,7 +116,7 @@ public class MainActivity extends AppCompatActivity
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                Log.d(TAG, "onFailure: ");
+                Log.e(TAG, "onFailure ");
             }
 
             @Override
@@ -120,10 +124,13 @@ public class MainActivity extends AppCompatActivity
                 Gson gson = new Gson();//创建Gson对象
                 bean = gson.fromJson(response.body().string(), JsonRootBean.class);//解析
 
-
-
-
-
+                //----------------------
+                ///回调后的操作
+                //----------------------
+                for(int i = 0; i < 5; i ++) {
+                    myAdapter.addItem(bean.getData().getFeed().get(i));
+                }
+                myAdapter.notifyDataSetChanged();
 
 
             }
