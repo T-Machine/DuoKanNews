@@ -19,7 +19,7 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:28.+'
     implementation 'com.android.support:support-v4:28.+'
     implementation 'com.android.support:design:28.+'
@@ -30,4 +30,8 @@ dependencies {
     implementation 'com.wx.goodview:goodview:1.0.0'
     implementation 'com.squareup.okhttp3:okhttp:3.12.0'
     implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.android.support:cardview-v7:28.+'
+    implementation 'com.android.support:recyclerview-v7:28.+'
+    implementation files('src/main/java/com/example/group44/newscollection/xUtils-2.6.14.jar')
+    implementation 'de.hdodenhof:circleimageview:2.1.0'
 }
