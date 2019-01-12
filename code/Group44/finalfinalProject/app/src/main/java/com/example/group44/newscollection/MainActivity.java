@@ -114,7 +114,6 @@ public class MainActivity extends AppCompatActivity
                     Integer i = s.getPubDate();
                     time.setText(i.toString());
                 }
-
                 mBitmapUtils.display(img, s.getKpic());
             }
         };
@@ -138,7 +137,6 @@ public class MainActivity extends AppCompatActivity
         recyclerView = (RecyclerView)findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(myAdapter);
-
 
         // 获取json
         OkHttpClient okHttpClient = new OkHttpClient();
