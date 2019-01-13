@@ -5,7 +5,7 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
-@Entity(tableName = "word_table")
+@Entity(tableName = "word_frequency_table")
 public class WordFrequency {
 
     @PrimaryKey
@@ -14,7 +14,7 @@ public class WordFrequency {
     private String mWord;
 
     @NonNull
-    @ColumnInfo(name = "frequence")
+    @ColumnInfo(name = "frequency")
     private int mFrequency;
 
     public WordFrequency(@NonNull String word, @NonNull int frequency) {
@@ -31,5 +31,6 @@ public class WordFrequency {
     public int getFrequency() {
         return this.mFrequency;
     }
+
 
 }
