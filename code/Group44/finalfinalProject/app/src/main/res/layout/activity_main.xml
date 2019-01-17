@@ -58,12 +58,11 @@
         android:layout_height="match_parent"
         android:translationZ="7dp">
 
-        <ImageButton
+        <ImageView
             android:id="@+id/hidden_card"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:src="@mipmap/quotation_up"
-            android:background="@drawable/button_shape"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/guanbi"
             android:translationZ="8dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"

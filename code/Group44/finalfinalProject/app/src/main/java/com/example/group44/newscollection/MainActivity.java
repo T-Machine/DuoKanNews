@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity
     private BitmapUtils mBitmapUtils;
     Boolean isCardShow = false;
     TextView blackShodow;
-    ImageButton hidden_card;
+    ImageView hidden_card;
     ViewPager view_pager;
     PagerAdapter view_pager_adapter;
     private ArrayList<Feed> mNewsList;

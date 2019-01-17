@@ -44,16 +44,15 @@
         android:translationZ="6dp"
         android:visibility="visible"/>
 
-    <ImageButton
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:src="@mipmap/quotation_up"
-        android:background="@drawable/button_shape"
+    <ImageView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/guanbi"
         android:translationZ="7dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="100dp"/>
+        android:layout_marginBottom="75dp"/>
 
     <!--放最后面-->
     <android.support.design.widget.NavigationView
