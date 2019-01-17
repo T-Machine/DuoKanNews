@@ -17,6 +17,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Layout;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -26,6 +27,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -33,6 +35,8 @@ import com.example.group44.newscollection.JSON.Feed;
 import com.example.group44.newscollection.JSON.JsonRootBean;
 import com.example.group44.newscollection.adapter.MyRecyclerViewAdapter;
 import com.example.group44.newscollection.adapter.MyViewHolder;
+import com.example.group44.newscollection.adapter.ViewAdapter;
+import com.example.group44.newscollection.transformer.GalleryTransformer;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -63,6 +67,7 @@ public class MainActivity extends AppCompatActivity
     private BitmapUtils mBitmapUtils;
     Boolean isCardShow = false;
     TextView blackShodow;
+    ImageButton hidden_card;
     ViewPager view_pager;
     PagerAdapter view_pager_adapter;
     private ArrayList<Feed> mNewsList;
@@ -98,6 +103,7 @@ public class MainActivity extends AppCompatActivity
         isCardShow = false;
         blackShodow = findViewById(R.id.blackShodow);
         view_pager = findViewById(R.id.view_pager);
+        hidden_card = findViewById(R.id.hidden_card);
 
         mBitmapUtils = new BitmapUtils(this);
         mNewsList = new ArrayList<>();
@@ -130,6 +136,7 @@ public class MainActivity extends AppCompatActivity
                 //previewCard.setVisibility(View.VISIBLE);
                 blackShodow.setVisibility(View.VISIBLE);
                 view_pager.setVisibility(View.VISIBLE);
+                hidden_card.setVisibility(View.VISIBLE);
 
                 //view pager定位到当前item
                 view_pager.setCurrentItem(position);
@@ -138,6 +145,17 @@ public class MainActivity extends AppCompatActivity
         recyclerView = (RecyclerView)findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(myAdapter);
+
+        //隐藏按钮
+        hidden_card.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                isCardShow = false;
+                blackShodow.setVisibility(View.GONE);
+                view_pager.setVisibility(View.GONE);
+                hidden_card.setVisibility(View.GONE);
+            }
+        });
 
 
         // 获取json
@@ -172,6 +190,7 @@ public class MainActivity extends AppCompatActivity
                             myAdapter.addItem(bean.getData().getFeed().get(i));
                         }
                         myAdapter.notifyDataSetChanged();
+                        setViewPager();
                     }
                 });
             }
@@ -295,5 +314,43 @@ public class MainActivity extends AppCompatActivity
         }
         super.onActivityResult(requestCode, resultCode, data);
 
+    }
+
+    void setViewPager() {
+        pages = getPages();
+        view_pager_adapter = new ViewAdapter(pages);
+        view_pager.setAdapter(view_pager_adapter);
+        view_pager.setPageMargin(10);
+        view_pager.setPageTransformer(true, new GalleryTransformer());
+    }
+
+    private List<View> getPages() {
+        LayoutInflater inflater = LayoutInflater.from(this);
+        List<View> pages = new ArrayList<>();
+
+        for(int i = 0; i < 5; i ++) {
+            Feed item = (Feed) myAdapter.getItem(i);
+            View card_view = inflater.inflate(R.layout.item_big_card, null);
+
+            TextView read = card_view.findViewById(R.id.readMore);
+            TextView title = card_view.findViewById(R.id.previewTitle);
+            TextView content = card_view.findViewById(R.id.previewContent);
+            ImageView img = card_view.findViewById(R.id.iv_icon);
+
+            title.setText(item.getTitle());
+            mBitmapUtils.display(img, item.getKpic());
+            read.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(MainActivity.this, NewsDetail.class);
+                    startActivity(intent);
+                    finish();
+                }
+            });
+
+            pages.add(card_view);
+        }
+
+        return pages;
     }
 }
