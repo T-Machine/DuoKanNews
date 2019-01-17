@@ -145,7 +145,6 @@ public class MainActivity extends AppCompatActivity
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(myAdapter);
 
-<<<<<<< HEAD
         //隐藏按钮
         hidden_card.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -157,9 +156,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-
-=======
->>>>>>> b6f1c2fa2a9743c87d4cac4524925b0c4ad388d1
         // 获取json
         OkHttpClient okHttpClient = new OkHttpClient();
         final Request request = new Request.Builder()
