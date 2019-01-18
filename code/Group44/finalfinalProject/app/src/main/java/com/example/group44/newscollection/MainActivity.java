@@ -384,7 +384,7 @@ public class MainActivity extends AppCompatActivity
         List<View> pages = new ArrayList<>();
 
         for(int i = 0; i < 5; i ++) {
-            Feed item = (Feed) myAdapter.getItem(i);
+            final Feed item = (Feed) myAdapter.getItem(i);
             View card_view = inflater.inflate(R.layout.item_big_card, null);
 
             TextView read = card_view.findViewById(R.id.readMore);
@@ -399,7 +399,11 @@ public class MainActivity extends AppCompatActivity
             read.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("url", item.getLink());
+                    bundle.putString("img",item.getKpic());
                     Intent intent = new Intent(MainActivity.this, NewsDetail.class);
+                    intent.putExtra("message",bundle);
                     startActivity(intent);
                     finish();
                 }

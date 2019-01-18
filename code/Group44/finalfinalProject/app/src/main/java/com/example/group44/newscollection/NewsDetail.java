@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
@@ -20,17 +21,103 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.group44.newscollection.JSON.Feed;
+import com.lidroid.xutils.BitmapUtils;
 import com.wx.goodview.GoodView;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import java.io.IOException;
+
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class NewsDetail extends AppCompatActivity {
     // 滑动
     ImageView imgview;
     ConstraintLayout buttonset;
     String url = "";
+    private BitmapUtils mBitmapUtils;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_detail);
+        Intent intent = getIntent();
+        //从intent取出bundle
+        Bundle bundle = intent.getBundleExtra("message");
+        //获取数据
+        url = bundle.getString("url");
+        String mainImg = bundle.getString("img");
+        ImageView imgView = findViewById(R.id.newsImage);
+        if(mainImg.length() == 0){
+            imgView.setImageResource(R.drawable.logo);
+        } else{
+            Log.i("imgsrc",mainImg);
+            mBitmapUtils.display(imgView, mainImg);
+        }
+
+        Observable.create(new ObservableOnSubscribe<Feed>() {
+            @Override
+            public void subscribe(ObservableEmitter<Feed> emitter) throws IOException {
+                Document doc = Jsoup.connect(url).get();
+                Log.i("html", doc.title());
+                Element body = doc.body();
+                Elements p = body.select("p");
+                e.setSummary("");
+                String currentSummary = "";
+                for(Element element : p){
+                    currentSummary += element.text();
+                }
+                // 获取句子
+                for(int index = 0; index < 1; index++){
+                    Integer endSentance = currentSummary.indexOf("。");
+                    if(endSentance == -1) break;
+                    e.addSummary(currentSummary.substring(0, endSentance + 1));
+                    currentSummary = currentSummary.substring(endSentance + 1);
+                }
+                Log.i("Jsoup", e.getSummary());
+                if(e.getSummary().length() == 0){
+                    e.setSummary("找不到对应文本哦/./");
+                }
+                emitter.onNext(e);
+                emitter.onComplete();
+            }
+            // 需要回调主线程
+        }).subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Feed>() {
+
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(final Feed value) {
+                        myAdapter.addItem(value);
+                        myAdapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d(TAG, "Error exist");
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.d(TAG, "Complete Sending Paragraph");
+                        setViewPager();
+                    }
+                });
+
         final GoodView goodView = new GoodView(this);
         ImageView imgButton = findViewById(R.id.dislikeButton);
         ImageView collectionBtn = findViewById(R.id.collectionBtn);
