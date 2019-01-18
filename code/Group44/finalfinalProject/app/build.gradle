@@ -16,6 +16,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    buildToolsVersion '28.0.2'
 }
 
 dependencies {
@@ -35,10 +36,16 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:28.+'
     implementation files('src/main/java/com/example/group44/newscollection/xUtils-2.6.14.jar')
     implementation 'de.hdodenhof:circleimageview:2.1.0'
+<<<<<<< HEAD
     implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0-alpha-14'
     implementation 'com.scwang.smartrefresh:SmartRefreshHeader:1.1.0-alpha-14'
 
 
+=======
+    implementation 'io.reactivex.rxjava2:rxjava:2.0.1'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    implementation 'org.jsoup:jsoup:1.10.2'
+>>>>>>> d30f9453fc9889638bd8b7373cdbce20e00354a6
     // database related
     // Room components
     implementation "android.arch.persistence.room:runtime:$rootProject.roomVersion"
@@ -47,5 +54,4 @@ dependencies {
     // Lifecycle components
     implementation "android.arch.lifecycle:extensions:$rootProject.archLifecycleVersion"
     annotationProcessor "android.arch.lifecycle:compiler:$rootProject.archLifecycleVersion"
-
 }

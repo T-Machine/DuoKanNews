@@ -7,7 +7,11 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+<<<<<<< HEAD
 import android.support.annotation.NonNull;
+=======
+import android.os.Message;
+>>>>>>> d30f9453fc9889638bd8b7373cdbce20e00354a6
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.PagerAdapter;
@@ -47,10 +51,23 @@ import com.lidroid.xutils.BitmapUtils;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -192,21 +209,63 @@ public class MainActivity extends AppCompatActivity
             public void onResponse(Call call, Response response) throws IOException {
                 Gson gson = new Gson();//创建Gson对象
                 bean = gson.fromJson(response.body().string(), JsonRootBean.class);//解析
-                for(Feed e : bean.getData().getFeed()){
-                    Log.i("ssL", e.getIntro());
-                }
-
                 //----------------------
                 ///回调后的操作
                 //----------------------
 
-                handler.post(new Runnable() {
+                Observable.create(new ObservableOnSubscribe<Feed>() {
                     @Override
-                    public void run() {
-                        for(int i = 0; i < 5; i ++) {
-                            myAdapter.addItem(bean.getData().getFeed().get(i));
+                    public void subscribe(ObservableEmitter<Feed> emitter) throws IOException {
+                        for(int i = 0; i < bean.getData().getFeed().size() && i < 5; i++){
+                            Feed e = bean.getData().getFeed().get(i);
+                            Document doc = Jsoup.connect(e.getLink()).get();
+                            Log.i("html", doc.title());
+                            Element body = doc.body();
+                            Elements p = body.select("p");
+                            e.setSummary("");
+                            String currentSummary = "";
+                            for(Element element : p){
+                                currentSummary += element.text();
+                            }
+                            // 获取句子
+                            for(int index = 0; index < 1; index++){
+                                Integer endSentance = currentSummary.indexOf("。");
+                                if(endSentance == -1) break;
+                                e.addSummary(currentSummary.substring(0, endSentance + 1));
+                                currentSummary = currentSummary.substring(endSentance + 1);
+                            }
+                            Log.i("Jsoup", e.getSummary());
+                            if(e.getSummary().length() == 0){
+                                e.setSummary("找不到对应文本哦/./");
+                            }
+                            emitter.onNext(e);
                         }
+                        emitter.onComplete();
+                    }
+                    // 需要回调主线程
+                }).subscribeOn(Schedulers.computation())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Observer<Feed>() {
+
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(final Feed value) {
+                        myAdapter.addItem(value);
                         myAdapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d(TAG, "Error exist");
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.d(TAG, "Complete Sending Paragraph");
                         setViewPager();
                     }
                 });
@@ -241,13 +300,6 @@ public class MainActivity extends AppCompatActivity
         //----------------------------------
         //推荐内容部分
         //----------------------------------
-
-
-
-
-
-
-
 
     }
 
@@ -333,6 +385,7 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    // get data from the list
     void setViewPager() {
         pages = getPages();
         view_pager_adapter = new ViewAdapter(pages);
@@ -346,22 +399,28 @@ public class MainActivity extends AppCompatActivity
         List<View> pages = new ArrayList<>();
 
         for(int i = 0; i < 5; i ++) {
-            Feed item = (Feed) myAdapter.getItem(i);
+            final Feed item = (Feed) myAdapter.getItem(i);
             View card_view = inflater.inflate(R.layout.item_big_card, null);
 
             TextView read = card_view.findViewById(R.id.readMore);
             TextView title = card_view.findViewById(R.id.previewTitle);
             TextView content = card_view.findViewById(R.id.previewContent);
             ImageView img = card_view.findViewById(R.id.iv_icon);
-
+            content.setText(item.getSummary());
+            System.out.println(item.getSummary());
             title.setText(item.getTitle());
             mBitmapUtils.display(img, item.getKpic());
             read.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("url", item.getLink());
+                    bundle.putString("img",item.getKpic());
+                    bundle.putString("source",item.getSource());
                     Intent intent = new Intent(MainActivity.this, NewsDetail.class);
+                    intent.putExtra("message",bundle);
                     startActivity(intent);
-                    finish();
+//                    finish();
                 }
             });
 
