@@ -272,6 +272,7 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public void onNext(final Feed value) {
                         myAdapter.addItem(value);
+                        Log.d("尝试一下",value.toString());
                         myAdapter.notifyDataSetChanged();
                     }
 
