@@ -56,6 +56,7 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -89,13 +90,22 @@ public class MainActivity extends AppCompatActivity
     PagerAdapter view_pager_adapter;
     private ArrayList<Feed> mNewsList;
     private List<View> pages;
-    Handler handler = new Handler();
+
     RefreshLayout mRefreshLayout;             //下拉刷新
 
+    // 加载框
+    LoadingDialog ld;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // 加载框---------------
+        ld = new LoadingDialog(MainActivity.this);
+        ld.show();
+        findViewById(R.id.drawer_layout).setVisibility(View.INVISIBLE);
+        //------------------
+
         // 获得用户名
         SharedPreferences shared=getSharedPreferences("Username", MODE_PRIVATE);
         //侧滑 功能
@@ -137,7 +147,8 @@ public class MainActivity extends AppCompatActivity
                 }
                 if(s.getPubDate() != -1){
                     Integer i = s.getPubDate();
-                    time.setText(i.toString());
+                    Date pubDate = new Date(i);
+                    time.setText(pubDate.toString());
                 }
                 mBitmapUtils.display(img, s.getKpic());
             }
@@ -175,6 +186,7 @@ public class MainActivity extends AppCompatActivity
 //                message.obj = data ;
 //                mHandler.sendMessageDelayed(message,2000);
                 // 异步操作
+                refreshLayout.finishRefresh();
             }
         });
 
@@ -264,6 +276,8 @@ public class MainActivity extends AppCompatActivity
                     public void onComplete() {
                         Log.d(TAG, "Complete Sending Paragraph");
                         setViewPager();
+                        ld.dismiss();
+                        findViewById(R.id.drawer_layout).setVisibility(View.VISIBLE);
                     }
                 });
             }
@@ -412,8 +426,11 @@ public class MainActivity extends AppCompatActivity
                 public void onClick(View view) {
                     Bundle bundle = new Bundle();
                     bundle.putString("url", item.getLink());
-                    bundle.putString("img",item.getKpic());
+                    bundle.putString("imgUrl",item.getKpic());
                     bundle.putString("source",item.getSource());
+                    bundle.putString("title", item.getTitle());
+//                    bundle.putString("pubDate");
+                    bundle.putString("digest", item.getSummary());
                     Intent intent = new Intent(MainActivity.this, NewsDetail.class);
                     intent.putExtra("message",bundle);
                     startActivity(intent);

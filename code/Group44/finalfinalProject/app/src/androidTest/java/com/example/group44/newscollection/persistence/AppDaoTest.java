@@ -5,6 +5,8 @@ import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.util.Log;
 
+import com.example.group44.newscollection.utils.UtilsFunction;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -76,26 +78,15 @@ public class AppDaoTest {
         /**
          * this test function tests both query and insert functionality of DAO
          */
-        mDao.insertFavNews(newsGenerator(
+        mDao.insertFavNews(UtilsFunction.newsGenerator(
                 "title1",
-                new Date(),
+//                new Date(),
                 "abc",
                 "abc",
-                "abc",
-                new byte[]{1, 2}
+                "abc"
+//                "abc"
         ));
         Log.d(TAG, "insertFavNews: size of query : " + mDao.getAllFavoriteNews().size());
         assertEquals(mDao.getAllFavoriteNews().get(0).title, "title1");
-    }
-
-    private FavoriteNews newsGenerator(String title, Date date, String source, String digest, String url, byte[] image) {
-        FavoriteNews n = new FavoriteNews();
-        n.date = date;
-        n.title = title;
-        n.source = source;
-        n.digest = digest;
-        n.srcUrl = url;
-        n.image = image;
-        return n;
     }
 }

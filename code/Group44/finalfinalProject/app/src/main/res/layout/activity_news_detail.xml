@@ -183,6 +183,7 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/detail_content_img"
                 android:layout_marginTop="20dp"
+                android:visibility="visible"
                 android:text="已经到底了"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
