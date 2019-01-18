@@ -175,6 +175,7 @@ public class MainActivity extends AppCompatActivity
 //                message.obj = data ;
 //                mHandler.sendMessageDelayed(message,2000);
                 // 异步操作
+                refreshLayout.finishRefresh();
             }
         });
 
