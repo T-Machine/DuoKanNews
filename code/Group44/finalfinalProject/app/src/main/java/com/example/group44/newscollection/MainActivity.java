@@ -394,6 +394,7 @@ public class MainActivity extends AppCompatActivity
                     Bundle bundle = new Bundle();
                     bundle.putString("url", item.getLink());
                     bundle.putString("img",item.getKpic());
+                    bundle.putString("source",item.getSource());
                     Intent intent = new Intent(MainActivity.this, NewsDetail.class);
                     intent.putExtra("message",bundle);
                     startActivity(intent);

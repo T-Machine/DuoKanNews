@@ -4,15 +4,19 @@ import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.ImageView;
@@ -123,7 +127,6 @@ public class NewsDetail extends AppCompatActivity {
         Intent intent = getIntent();
         //从intent取出bundle
         Bundle bundle = intent.getBundleExtra("message");
-
         // setup view
         mContentImg = findViewById(R.id.detail_content_img);
         mContentText = findViewById(R.id.paragraph);
@@ -133,10 +136,10 @@ public class NewsDetail extends AppCompatActivity {
         //获取数据
         url = bundle.getString("url");
         Log.d(TAG, "onCreate: url => " + url);
+        TextView src = findViewById(R.id.source);
+        src.setText(bundle.getString("source"));
         mBitmapUtils = new BitmapUtils(this);
         // todo: change
-        ImageView imgView = findViewById(R.id.newsImage);
-        imgView.setImageResource(R.drawable.logo);
 //        mBitmapUtils.display(imgView, "http://wx2.sinaimg.cn/mw690/654b47daly1fzappphdgjj21420u0b29.jpg");
 //        String mainImg = bundle.getString("img");
 //        if(mainImg.length() == 0){
@@ -158,7 +161,9 @@ public class NewsDetail extends AppCompatActivity {
 
                 StringBuilder buf = new StringBuilder();
                 for(Element e : p) {
-                    buf.append(e.text());
+                    String s = e.text();
+                    s += '\n';
+                    buf.append(s);
                 }
                 res.setText(buf.toString());
                 Log.d(TAG, "subscribe: " + res.getText());
@@ -200,13 +205,17 @@ public class NewsDetail extends AppCompatActivity {
                         Log.d(TAG, "onNext: " + value.getText());
 
                         if(value.getImgURLNum() > 1) {
-                            mBitmapUtils.display(mContentImg, value.getImgURL(value.getImgURLNum() - 2));
+                            ImageView imgView = findViewById(R.id.newsImage);
+                            mBitmapUtils.display(imgView, value.getImgURL(value.getImgURLNum() - 2));
                         } else {
                             Log.d(TAG, "onNext: No imgs here");
                         }
 
                         mContentText.setText(value.getText());
-                        mTitle.setText(value.getTitle());
+                        String title = value.getTitle();
+                        title.replace("_手机新浪网", "");
+                        title.replace("_新浪视频", "");
+                        mTitle.setText(title);
                     }
 
                     @Override
@@ -396,6 +405,17 @@ public class NewsDetail extends AppCompatActivity {
         tv.setText("");
 
         imgview = findViewById(R.id.newsImage);
+
+        // 设置主图比例
+        WindowManager wm = (WindowManager) getBaseContext()
+                .getSystemService(Context.WINDOW_SERVICE);
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        wm.getDefaultDisplay().getMetrics(outMetrics);
+
+        int screenWidth = outMetrics.widthPixels;
+        imgview.setMaxWidth(screenWidth);
+        imgview.setMaxHeight(screenWidth / 3 * 4);
+
         scrl.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent event) {

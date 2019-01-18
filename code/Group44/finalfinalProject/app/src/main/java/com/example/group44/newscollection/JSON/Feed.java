@@ -16,7 +16,7 @@ public class Feed {
     private String newsId;
     private String title;
     private String longTitle;
-    private String source;
+    private String source = "";
     private String link;
     private String pic;
     private String kpic;
