@@ -9,6 +9,8 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 
+import jackmego.com.jieba_android.JiebaSegmenter;
+
 public class HelloActivity extends AppCompatActivity {
 
     private ConstraintLayout view;
@@ -16,6 +18,8 @@ public class HelloActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hello);
+        // 结巴init
+        JiebaSegmenter.init(getApplicationContext());
         view = (ConstraintLayout)findViewById(R.id.helloView);
 
         // 渐变动画

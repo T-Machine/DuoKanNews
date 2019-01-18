@@ -26,6 +26,7 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.example.group44.newscollection.JSON.Feed;
+import com.example.group44.newscollection.persistence.DetectWords;
 import com.lidroid.xutils.BitmapUtils;
 import com.wx.goodview.GoodView;
 
@@ -36,6 +37,8 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -46,6 +49,7 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import jackmego.com.jieba_android.JiebaSegmenter;
 
 public class NewsDetail extends AppCompatActivity {
 
@@ -225,8 +229,53 @@ public class NewsDetail extends AppCompatActivity {
 
                     @Override
                     public void onComplete() {
-//                        Log.d(TAG, "Complete Sending Paragraph");
-//                        setViewPager();
+                        TextView tv = findViewById(R.id.paragraph);
+                        if(tv.getText().toString().equals("")) return;
+                        final String analizedString = tv.getText().toString();
+                        // 多线程分词
+                        new Thread(){
+                            // 排序
+                            class SortByFrequency implements Comparator {
+                                public int compare(Object o1, Object o2) {
+                                    String_val s1 = (String_val) o1;
+                                    String_val s2 = (String_val) o2;
+                                    if (s1.getVal() < s2.getVal())
+                                        return 1;
+                                    else if(s1.getVal() == s2.getVal()) return 0;
+                                    return -1;
+                                }
+                            }
+
+                            @Override
+                            public void run(){
+                                ArrayList<String_val> local_str_val = new ArrayList<>();
+                                ArrayList<String> wordList = JiebaSegmenter.getJiebaSegmenterSingleton().getDividedString(analizedString);
+                                for(String str : wordList){
+                                    if(str.length() <= 2) continue;
+                                    // 筛选
+                                    if(!DetectWords.inValid(str)) continue;
+                                    boolean flag = false;
+                                    for(String_val e : local_str_val){
+                                        if(e.getChara().equals(str)){
+                                            local_str_val.get(local_str_val.indexOf(e)).add();
+                                            flag = true;
+                                            break;
+                                        }
+                                    }
+                                    if(!flag){
+                                        String_val tmp = new String_val(str, 1);
+                                        local_str_val.add(tmp);
+                                    }
+                                }
+                                if(local_str_val.size() == 0) return;
+                                // 排序
+                                Collections.sort(local_str_val, new SortByFrequency());
+                                for(String_val e : local_str_val){
+                                    if(local_str_val.indexOf(e) > 3) break;
+                                    Log.i("analyze", e.getChara() + " " + e.getVal().toString());
+                                }
+                            }
+                        }.start();
                     }
                 });
 

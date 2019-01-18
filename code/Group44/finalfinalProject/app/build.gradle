@@ -36,7 +36,7 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:28.+'
     implementation files('src/main/java/com/example/group44/newscollection/xUtils-2.6.14.jar')
     implementation 'de.hdodenhof:circleimageview:2.1.0'
-
+    implementation 'jackmego.com.jieba_android:jieba_android-release:0.1.0'
     implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0-alpha-14'
     implementation 'com.scwang.smartrefresh:SmartRefreshHeader:1.1.0-alpha-14'
 
