@@ -86,10 +86,14 @@ public class MainActivity extends AppCompatActivity
     PagerAdapter view_pager_adapter;
     private ArrayList<Feed> mNewsList;
     private List<View> pages;
-    Handler handler = new Handler();
 
+    // 加载框
+    LoadingDialog ld;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ld = new LoadingDialog(MainActivity.this);
+        findViewById(R.id.drawer_layout).setVisibility(View.INVISIBLE);
+        ld.show();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         // 获得用户名
@@ -245,6 +249,8 @@ public class MainActivity extends AppCompatActivity
                     public void onComplete() {
                         Log.d(TAG, "Complete Sending Paragraph");
                         setViewPager();
+                        ld.dismiss();
+                        findViewById(R.id.drawer_layout).setVisibility(View.VISIBLE);
                     }
                 });
             }
