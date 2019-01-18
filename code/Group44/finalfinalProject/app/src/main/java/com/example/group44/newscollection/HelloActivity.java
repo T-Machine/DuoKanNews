@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
@@ -19,6 +20,7 @@ public class HelloActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hello);
         // 结巴init
+        Log.i("activity", "inHello");
         JiebaSegmenter.init(getApplicationContext());
         view = (ConstraintLayout)findViewById(R.id.helloView);
 

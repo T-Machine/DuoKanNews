@@ -1,6 +1,6 @@
 package com.example.group44.newscollection.persistence;
 
-import android.app.Application;
+import android.content.Context;
 
 import java.util.List;
 
@@ -21,7 +21,7 @@ public class AppRepository {
      * constructor of repository
      * @param application: context of activity
      */
-    AppRepository(Application application) {
+    public AppRepository(Context application) {
         AppDatabase db = AppDatabase.getDatabase(application);
         mAppDao = db.wordFrequcyDao();
     }
@@ -31,7 +31,7 @@ public class AppRepository {
      * @param word
      * @return frequency
      */
-    int getFrequency(String word) {
+    public int getFrequency(String word) {
 
         return mAppDao.getFrequency(word);
     }
@@ -40,15 +40,41 @@ public class AppRepository {
      * update frequency a specific word
      * @param newWf, a new instance of word-frequency pair
      */
-    void updateFrequency(WordFrequency newWf) {
+    public void updateFrequency(WordFrequency newWf) {
         mAppDao.updateFrequency(newWf);
     }
+
+    /**
+     * increase specific word frequency by 1
+     * @param word
+     */
+    public void increaseFrenquency(String word) {
+        updateFrequency(new WordFrequency(word, getFrequency(word) + 1));
+    }
+
+    /**
+     * increase specific word frequency by 1
+     * @param word
+     * @return false if frequency already has been zero
+     */
+    public boolean decreaseFrenquency(String word) {
+        if(getFrequency(word) == 0) {
+            return false;
+        }
+        updateFrequency(new WordFrequency(word, getFrequency(word) - 1));
+        return true;
+    }
+
+    public void insertNewWord(String word) {
+        mAppDao.insertWF(new WordFrequency(word, 1));
+    }
+
 
     /**
      * insert a user's favorite news into database
      * @param newFavNews: instance of news
      */
-    void insertNewFavNews(FavoriteNews newFavNews) {
+    public void insertNewFavNews(FavoriteNews newFavNews) {
         mAppDao.insertFavNews(newFavNews);
     }
 
@@ -56,10 +82,18 @@ public class AppRepository {
      * return all favorite news of the user
      * @return List of FavoriteNews
      */
-    List<FavoriteNews> queryAllFavNews() {
+    public List<FavoriteNews> queryAllFavNews() {
         return mAppDao.getAllFavoriteNews();
     }
 
+    /**
+     * query favorite news by title
+     * @param title
+     * @return
+     */
+    public List<FavoriteNews> queryNewsByTitle(String title) {
+        return mAppDao.getFavoriteNewsByTitle(title);
+    }
 
 }
 
