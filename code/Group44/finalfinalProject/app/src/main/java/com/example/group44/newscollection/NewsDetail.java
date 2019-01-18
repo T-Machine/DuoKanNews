@@ -26,6 +26,7 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.example.group44.newscollection.JSON.Feed;
+import com.example.group44.newscollection.persistence.FavoriteNews;
 import com.lidroid.xutils.BitmapUtils;
 import com.wx.goodview.GoodView;
 
