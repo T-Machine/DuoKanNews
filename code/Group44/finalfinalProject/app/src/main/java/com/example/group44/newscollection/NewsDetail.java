@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
@@ -25,10 +26,12 @@ import android.widget.VideoView;
 
 
 import com.example.group44.newscollection.JSON.Feed;
+import com.example.group44.newscollection.persistence.AppDatabase;
 import com.example.group44.newscollection.persistence.DetectWords;
 import com.example.group44.newscollection.persistence.FavoriteNews;
 import com.example.group44.newscollection.persistence.AppRepository;
 import com.example.group44.newscollection.persistence.FavoriteNews;
+import com.example.group44.newscollection.persistence.WordFrequency;
 import com.example.group44.newscollection.utils.UtilsFunction;
 import com.lidroid.xutils.BitmapUtils;
 import com.wx.goodview.GoodView;
@@ -129,6 +132,10 @@ public class NewsDetail extends AppCompatActivity {
     private AppRepository mDatasource;
     private FavoriteNews mFavNewsCandidate;
 
+    // 不喜欢的原因对话框
+    CommonDialog commonDialog;
+    boolean isWordNull = false;
+    ArrayList<String> favWords = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -136,7 +143,7 @@ public class NewsDetail extends AppCompatActivity {
         Intent intent = getIntent();
         //从intent取出bundle
         Bundle bundle = intent.getBundleExtra("message");
-
+        commonDialog = new CommonDialog(NewsDetail.this);
         mFavNewsCandidate = UtilsFunction.newsGenerator(
                 bundle.getString("title"),
                 bundle.getString("digest"),
@@ -272,12 +279,17 @@ public class NewsDetail extends AppCompatActivity {
                                         local_str_val.add(tmp);
                                     }
                                 }
-                                if(local_str_val.size() == 0) return;
+                                if(local_str_val.size() == 0) {
+                                    isWordNull = true;
+                                    return;
+                                }
                                 // 排序
                                 Collections.sort(local_str_val, new SortByFrequency());
-                                for(String_val e : local_str_val){
-                                    if(local_str_val.indexOf(e) > 3) break;
+                                for(int i = 0; i < local_str_val.size() && i < 4; i++){
+                                    String_val e = local_str_val.get(i);
+                                    favWords.add(e.getChara());
                                     Log.i("analyze", e.getChara() + " " + e.getVal().toString());
+                                    // todo:永久化保存数据。如果存在数据则加上对应的val值，如果没有则进行保存。
                                 }
                             }
                         }.start();
@@ -347,8 +359,12 @@ public class NewsDetail extends AppCompatActivity {
                     @Override
                     public void onAnimationEnd(Animation animation) {
                         tv.setAlpha(1);
-                        CommonDialog commonDialog = new CommonDialog(NewsDetail.this);
-                        commonDialog.show();
+                        if(isWordNull){
+                            Toast.makeText(NewsDetail.this, "抱歉，无法获得该文章的分词!", Toast.LENGTH_SHORT).show();
+                        }else{
+                            commonDialog.getMessage(favWords);
+                            commonDialog.show();
+                        }
                     }
 
                     @Override
