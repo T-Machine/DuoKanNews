@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
@@ -124,7 +125,6 @@ public class NewsDetail extends AppCompatActivity {
 
     // view
     private TextView mContentText;
-    private ImageView mContentImg;
     private TextView mTitle;
     private VideoView mVideoView;
 
@@ -136,8 +136,12 @@ public class NewsDetail extends AppCompatActivity {
     CommonDialog commonDialog;
     boolean isWordNull = false;
     ArrayList<String> favWords = new ArrayList<>();
+
+    Handler handler = new Handler();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        final GoodView goodView = new GoodView(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_detail);
         Intent intent = getIntent();
@@ -150,8 +154,6 @@ public class NewsDetail extends AppCompatActivity {
                 bundle.getString("url"),
                 bundle.getString("imgUrl")
         );
-        // setup view
-        mContentImg = findViewById(R.id.detail_content_img);
         mContentText = findViewById(R.id.paragraph);
         mTitle = findViewById(R.id.title);
 
@@ -172,13 +174,71 @@ public class NewsDetail extends AppCompatActivity {
                 Document doc = Jsoup.connect(url).get();
                 DetailItem res = new DetailItem();
                 Element body = doc.body();
-                // only one element
+
+
+                // 判断是否存在视频并增加跳转
+                Elements videoElements = body.select(".art_video");
+                if(videoElements.size() != 0){
+                    Log.i("figure.art_video",url);
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            ImageView imgButton = findViewById(R.id.videoBtn);
+                            imgButton.setVisibility(View.VISIBLE);
+                            imgButton.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                // 复制到剪贴板
+                                public void onClick(View v) {
+                                    final View tv = v;
+
+                                    goodView.setText("看视频");
+                                    goodView.show(v);
+                                    //动作
+                                    AlphaAnimation disappearAnimation = new AlphaAnimation(1, 0);
+                                    disappearAnimation.setDuration(400);
+                                    disappearAnimation.setAnimationListener(new Animation.AnimationListener() {
+                                        @Override
+                                        public void onAnimationStart(Animation animation) {
+
+                                        }
+
+                                        @Override
+                                        public void onAnimationEnd(Animation animation) {
+                                            tv.setAlpha(1);
+                                            // 跳转微信
+                                            try {
+                                                Uri uri = Uri.parse(url);
+                                                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                                                startActivity(intent);
+
+                                            } catch (ActivityNotFoundException e) {
+                                                // TODO: handle exception
+                                                Toast toast = Toast.makeText(NewsDetail.this, "没有进行浏览器跳转",Toast.LENGTH_LONG);
+                                                toast.show();
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onAnimationRepeat(Animation animation) {
+
+                                        }
+                                    });
+                                    v.startAnimation(disappearAnimation);
+                                }
+                            });
+                        }
+                    });
+                }
+
+
+                // 进行文字解析
                 Elements p = body.select("p");
 
                 StringBuilder buf = new StringBuilder();
                 for(Element e : p) {
                     String s = e.text();
-                    s += '\n';
+                    // 去除干扰
+                    if(s.indexOf("图为") != -1) continue;
                     buf.append(s);
                 }
                 res.setText(buf.toString());
@@ -227,10 +287,37 @@ public class NewsDetail extends AppCompatActivity {
                             Log.d(TAG, "onNext: No imgs here");
                         }
 
-                        mContentText.setText(value.getText());
+                        String origin = value.getText();
+                        // 分句
+                        ArrayList<String> subSentances = new ArrayList<>();
+                        while(origin.indexOf("。") != -1){
+                            subSentances.add(origin.substring(0, origin.indexOf("。") + 1));
+                            origin = origin.substring(origin.indexOf("。") + 1);
+                        }
+
+                        // 分段
+                        String complete = "        ";
+                        if(subSentances.size() > 14){
+                            Integer subParagraph = subSentances.size() / 7;
+                            for(int i = 0; i < subSentances.size(); ++i){
+                                complete += subSentances.get(i);
+                                if(i % subParagraph == 0 && i != 0){
+                                    complete += "\n\n       ";
+                                }
+                            }
+                        }else{
+                            for(String e : subSentances){
+                                complete += e;
+                            }
+                        }
+                        mContentText.setText(complete);
                         String title = value.getTitle();
-                        title.replace("_手机新浪网", "");
-                        title.replace("_新浪视频", "");
+                        if(title.indexOf("_手机新浪网") != -1){
+                            title = title.substring(0,title.indexOf("_手机新浪网"));
+                        }
+                        if(title.indexOf("_新浪视频") != -1){
+                            title = title.substring(0,title.indexOf("_新浪视频"));
+                        }
                         mTitle.setText(title);
                     }
 
@@ -239,6 +326,7 @@ public class NewsDetail extends AppCompatActivity {
                         Log.d(TAG, " error occur : " + e.getMessage());
                     }
 
+                    // 进行分词处理
                     @Override
                     public void onComplete() {
                         TextView tv = findViewById(R.id.paragraph);
@@ -296,7 +384,6 @@ public class NewsDetail extends AppCompatActivity {
                     }
                 });
 
-        final GoodView goodView = new GoodView(this);
         ImageView imgButton = findViewById(R.id.dislikeButton);
         ImageView collectionBtn = findViewById(R.id.collectionBtn);
         collectionBtn.setOnClickListener(new View.OnClickListener() {
@@ -494,7 +581,10 @@ public class NewsDetail extends AppCompatActivity {
 
         int screenWidth = outMetrics.widthPixels;
         imgview.setMaxWidth(screenWidth);
-        imgview.setMaxHeight(screenWidth / 3 * 4);
+        imgview.setMaxHeight(screenWidth);
+//        if(imgview.getMaxHeight() > 230){
+//            imgview.setMaxHeight(230);
+//        }
 
         scrl.setOnTouchListener(new View.OnTouchListener() {
             @Override

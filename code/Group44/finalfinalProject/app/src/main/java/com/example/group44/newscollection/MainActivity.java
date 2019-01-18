@@ -148,7 +148,10 @@ public class MainActivity extends AppCompatActivity
                 if(s.getPubDate() != -1){
                     Integer i = s.getPubDate();
                     Date pubDate = new Date(i);
-                    time.setText(pubDate.toString());
+                    String dateString = pubDate.toString();
+                    Integer endIndex = dateString.indexOf("GMT");
+                    dateString = dateString.substring(0, endIndex);
+                    time.setText(dateString);
                 }
                 mBitmapUtils.display(img, s.getKpic());
             }
@@ -236,13 +239,18 @@ public class MainActivity extends AppCompatActivity
                             for(Element element : p){
                                 currentSummary += element.text();
                             }
-                            // 获取句子
-                            for(int index = 0; index < 1; index++){
-                                Integer endSentance = currentSummary.indexOf("。");
-                                if(endSentance == -1) break;
-                                e.addSummary(currentSummary.substring(0, endSentance + 1));
-                                currentSummary = currentSummary.substring(endSentance + 1);
+//                            // 获取句子
+//                            for(int index = 0; index < 1; index++){
+//                                Integer endSentance = currentSummary.indexOf("。");
+//                                if(endSentance == -1) break;
+//                                e.addSummary(currentSummary.substring(0, endSentance + 1));
+//                                currentSummary = currentSummary.substring(endSentance + 1);
+//                            }
+                            if(currentSummary.length() > 70){
+                                currentSummary = currentSummary.substring(0, 70);
+                                currentSummary += "...";
                             }
+                            e.setSummary(currentSummary);
                             Log.i("Jsoup", e.getSummary());
                             if(e.getSummary().length() == 0){
                                 e.setSummary("找不到对应文本哦/./");
