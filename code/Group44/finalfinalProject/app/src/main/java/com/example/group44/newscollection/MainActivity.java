@@ -90,7 +90,6 @@ public class MainActivity extends AppCompatActivity
     PagerAdapter view_pager_adapter;
     private ArrayList<Feed> mNewsList;
     private List<View> pages;
-
     RefreshLayout mRefreshLayout;             //下拉刷新
 
     // 加载框
@@ -121,6 +120,7 @@ public class MainActivity extends AppCompatActivity
                 Intent intent = new Intent();
                 intent.setAction(Intent.ACTION_PICK);
                 intent.setType("image/*");
+
                 startActivityForResult(intent, 0);
             }
         });
@@ -325,6 +325,13 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
+        if(isCardShow == true){
+            isCardShow = false;
+            blackShodow.setVisibility(View.GONE);
+            view_pager.setVisibility(View.GONE);
+            hidden_card.setVisibility(View.GONE);
+            return;
+        }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
@@ -434,6 +441,7 @@ public class MainActivity extends AppCompatActivity
                 @Override
                 public void onClick(View view) {
                     Bundle bundle = new Bundle();
+                    isCardShow = false;
                     bundle.putString("url", item.getLink());
                     bundle.putString("imgUrl",item.getKpic());
                     bundle.putString("source",item.getSource());
