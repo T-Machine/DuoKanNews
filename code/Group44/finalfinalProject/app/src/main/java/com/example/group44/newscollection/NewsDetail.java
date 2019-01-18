@@ -376,6 +376,8 @@ public class NewsDetail extends AppCompatActivity {
                     // 未被收藏的新闻
                     mDatasource.insertNewFavNews(mFavNewsCandidate);
                     Log.d(TAG, "onClick: save favnews into database : " + mFavNewsCandidate.title);
+                    //Intent intent2 = new Intent(NewsDetail.this, CollectActivity.class);
+                    //startActivity(intent2);
                 } else {
                     Log.d(TAG, "onClick: already insert" + mFavNewsCandidate.title);
                     Toast.makeText(NewsDetail.this, "已被收藏，不要重复收藏", Toast.LENGTH_SHORT).show();
