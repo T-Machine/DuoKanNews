@@ -90,13 +90,22 @@ public class MainActivity extends AppCompatActivity
     PagerAdapter view_pager_adapter;
     private ArrayList<Feed> mNewsList;
     private List<View> pages;
-    Handler handler = new Handler();
+
     RefreshLayout mRefreshLayout;             //下拉刷新
 
+    // 加载框
+    LoadingDialog ld;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // 加载框---------------
+        ld = new LoadingDialog(MainActivity.this);
+        ld.show();
+        findViewById(R.id.drawer_layout).setVisibility(View.INVISIBLE);
+        //------------------
+
         // 获得用户名
         SharedPreferences shared=getSharedPreferences("Username", MODE_PRIVATE);
         //侧滑 功能
@@ -267,6 +276,8 @@ public class MainActivity extends AppCompatActivity
                     public void onComplete() {
                         Log.d(TAG, "Complete Sending Paragraph");
                         setViewPager();
+                        ld.dismiss();
+                        findViewById(R.id.drawer_layout).setVisibility(View.VISIBLE);
                     }
                 });
             }
