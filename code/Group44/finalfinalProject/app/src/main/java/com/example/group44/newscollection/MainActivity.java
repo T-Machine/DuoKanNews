@@ -441,7 +441,6 @@ public class MainActivity extends AppCompatActivity
                 @Override
                 public void onClick(View view) {
                     Bundle bundle = new Bundle();
-                    isCardShow = false;
                     bundle.putString("url", item.getLink());
                     bundle.putString("imgUrl",item.getKpic());
                     bundle.putString("source",item.getSource());
