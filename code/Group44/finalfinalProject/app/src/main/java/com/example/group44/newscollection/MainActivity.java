@@ -279,13 +279,6 @@ public class MainActivity extends AppCompatActivity
         //推荐内容部分
         //----------------------------------
 
-
-
-
-
-
-
-
     }
 
     @Override
@@ -392,7 +385,6 @@ public class MainActivity extends AppCompatActivity
             TextView content = card_view.findViewById(R.id.previewContent);
             ImageView img = card_view.findViewById(R.id.iv_icon);
             content.setText(item.getSummary());
-//            Log.i("part summary", item.getSummary());
             System.out.println(item.getSummary());
             title.setText(item.getTitle());
             mBitmapUtils.display(img, item.getKpic());
@@ -405,7 +397,7 @@ public class MainActivity extends AppCompatActivity
                     Intent intent = new Intent(MainActivity.this, NewsDetail.class);
                     intent.putExtra("message",bundle);
                     startActivity(intent);
-                    finish();
+//                    finish();
                 }
             });
 

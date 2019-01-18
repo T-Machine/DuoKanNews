@@ -1,25 +1,25 @@
 package com.example.group44.newscollection;
 
-import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import com.example.group44.newscollection.JSON.Feed;
 import com.lidroid.xutils.BitmapUtils;
@@ -31,6 +31,9 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -41,11 +44,78 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 public class NewsDetail extends AppCompatActivity {
+
+    class DetailItem {
+        private String mText;
+        private String mTitle;
+        private List<Bitmap> mImgs;
+        private List<String> mImgsURL;
+
+        // todo: video
+
+        DetailItem() {
+            mText = "";
+            mImgs = new ArrayList<>();
+            mImgsURL = new ArrayList<>();
+        }
+
+        public String getText() {
+            return mText;
+        }
+
+        public void setText(String text) {
+            mText = text;
+        }
+
+
+        public void insertImg(Bitmap item) {
+            mImgs.add(item);
+        }
+
+        public Bitmap getImg(int pos) {
+            return mImgs.get(pos);
+        }
+
+        public int getImgNum() {
+            return mImgs.size();
+        }
+
+        public void insertImgURL(String item) {
+            mImgsURL.add(item);
+        }
+
+        public String getImgURL(int pos) {
+            return mImgsURL.get(pos);
+        }
+
+        public int getImgURLNum() {
+            return mImgsURL.size();
+        }
+
+
+        public String getTitle() {
+            return mTitle;
+        }
+
+        public void setTitle(String title) {
+            mTitle = title;
+        }
+    }
+
+
     // 滑动
     ImageView imgview;
     ConstraintLayout buttonset;
     String url = "";
     private BitmapUtils mBitmapUtils;
+    private static String TAG = "DETAIL_ITEM";
+
+    private TextView mContentText;
+    private ImageView mContentImg;
+    private TextView mTitle;
+
+    private VideoView mVideoView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,49 +123,71 @@ public class NewsDetail extends AppCompatActivity {
         Intent intent = getIntent();
         //从intent取出bundle
         Bundle bundle = intent.getBundleExtra("message");
+
+        // setup view
+        mContentImg = findViewById(R.id.detail_content_img);
+        mContentText = findViewById(R.id.paragraph);
+        mTitle = findViewById(R.id.title);
+//        mVideoView = findViewById(R.)
+
         //获取数据
         url = bundle.getString("url");
-        String mainImg = bundle.getString("img");
+        Log.d(TAG, "onCreate: url => " + url);
+        mBitmapUtils = new BitmapUtils(this);
+        // todo: change
         ImageView imgView = findViewById(R.id.newsImage);
-        if(mainImg.length() == 0){
-            imgView.setImageResource(R.drawable.logo);
-        } else{
-            Log.i("imgsrc",mainImg);
-            mBitmapUtils.display(imgView, mainImg);
-        }
-
+        imgView.setImageResource(R.drawable.logo);
+//        mBitmapUtils.display(imgView, "http://wx2.sinaimg.cn/mw690/654b47daly1fzappphdgjj21420u0b29.jpg");
+//        String mainImg = bundle.getString("img");
+//        if(mainImg.length() == 0){
+//            imgView.setImageResource(R.drawable.logo);
+//        } else{
+//            Log.i("imgsrc",mainImg);
+//            mBitmapUtils.display(imgView, mainImg);
+//        }
 
         // RXJava获得内容
-        Observable.create(new ObservableOnSubscribe<Feed>() {
+        Observable.create(new ObservableOnSubscribe<DetailItem>() {
             @Override
-            public void subscribe(ObservableEmitter<Feed> emitter) throws IOException {
+            public void subscribe(ObservableEmitter<DetailItem> emitter) throws IOException {
                 Document doc = Jsoup.connect(url).get();
-                Log.i("html", doc.title());
+                DetailItem res = new DetailItem();
                 Element body = doc.body();
-//                Elements p = body.select("p");
-//                e.setSummary("");
-//                String currentSummary = "";
-//                for(Element element : p){
-//                    currentSummary += element.text();
-//                }
-//                // 获取句子
-//                for(int index = 0; index < 1; index++){
-//                    Integer endSentance = currentSummary.indexOf("。");
-//                    if(endSentance == -1) break;
-//                    e.addSummary(currentSummary.substring(0, endSentance + 1));
-//                    currentSummary = currentSummary.substring(endSentance + 1);
-//                }
-//                Log.i("Jsoup", e.getSummary());
-//                if(e.getSummary().length() == 0){
-//                    e.setSummary("找不到对应文本哦/./");
-//                }
-//                emitter.onNext(e);
-//                emitter.onComplete();
+                // only one element
+                Elements p = body.select("p");
+
+                StringBuilder buf = new StringBuilder();
+                for(Element e : p) {
+                    buf.append(e.text());
+                }
+                res.setText(buf.toString());
+                Log.d(TAG, "subscribe: " + res.getText());
+
+                // parsing problem here
+                Elements imgsURL = body.select("img");
+                Log.d(TAG, "subscribe: " + imgsURL.size());
+
+                for( Element e : imgsURL) {
+                    // todo
+                    String url = e.attr("abs:src");
+                    if(url.endsWith("png") || url.endsWith("jpg")) {
+//                        url = "http" + url;
+                        res.insertImgURL(url);
+                        Log.d(TAG, "subscribe: " + url);
+                    }
+                }
+                if(p != null) {
+                    res.setText(p.text());
+                }
+                res.setTitle(doc.title());
+                Log.d(TAG, "subscribe: setup done");
+                emitter.onNext(res);
+                emitter.onComplete();
             }
             // 需要回调主线程
         }).subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<Feed>() {
+                .subscribe(new Observer<DetailItem>() {
 
                     @Override
                     public void onSubscribe(Disposable d) {
@@ -103,14 +195,23 @@ public class NewsDetail extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onNext(final Feed value) {
-//                        myAdapter.addItem(value);
-//                        myAdapter.notifyDataSetChanged();
+                    public void onNext(final DetailItem value) {
+                        // update UI here
+                        Log.d(TAG, "onNext: " + value.getText());
+
+                        if(value.getImgURLNum() > 1) {
+                            mBitmapUtils.display(mContentImg, value.getImgURL(value.getImgURLNum() - 2));
+                        } else {
+                            Log.d(TAG, "onNext: No imgs here");
+                        }
+
+                        mContentText.setText(value.getText());
+                        mTitle.setText(value.getTitle());
                     }
 
                     @Override
                     public void onError(Throwable e) {
-//                        Log.d(TAG, "Error exist");
+                        Log.d(TAG, " error occur" + e.getMessage());
                     }
 
                     @Override
@@ -292,15 +393,13 @@ public class NewsDetail extends AppCompatActivity {
         final ScrollView scrl = findViewById(R.id.scroll);
         TextView tv = findViewById(R.id.paragraph);
         buttonset = findViewById(R.id.buttonSet);
-        tv.setText("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
-                "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
-                "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
-                "                \"\" +\n                \"\" +\n                \"\" +\n" +
-                "a");
+        tv.setText("");
+
         imgview = findViewById(R.id.newsImage);
         scrl.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent event) {
+
                 int scrollY=view.getScrollY();
                 int height=view.getHeight();
                 int scrollViewMeasuredHeight=scrl.getChildAt(0).getMeasuredHeight();
