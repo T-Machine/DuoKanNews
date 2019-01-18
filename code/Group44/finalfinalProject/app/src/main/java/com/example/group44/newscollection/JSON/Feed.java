@@ -40,6 +40,29 @@ public class Feed {
     private String packageName;
     private int needRemove;
     private String recommendInfo;
+    // add-------
+    private String summary;
+    public void addSummary(String added){this.summary += added;}
+    public void setSummary(String input){this.summary = input;}
+    public String getSummary(){return summary;}
+    private Integer id;
+    public void setID (Integer id){this.id = id;}
+
+    public Integer getId() {
+        return id;
+    }
+
+    private Integer totalNum;
+
+    public void setTotalNum(Integer totalNum) {
+        this.totalNum = totalNum;
+    }
+
+    public Integer getTotalNum() {
+        return totalNum;
+    }
+
+    //-----------------
     public void setPos(int pos) {
          this.pos = pos;
      }
