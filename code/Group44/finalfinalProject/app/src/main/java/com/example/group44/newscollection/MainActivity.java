@@ -7,11 +7,8 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-<<<<<<< HEAD
 import android.support.annotation.NonNull;
-=======
 import android.os.Message;
->>>>>>> d30f9453fc9889638bd8b7373cdbce20e00354a6
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.PagerAdapter;

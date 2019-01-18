@@ -130,13 +130,13 @@
     <orderEntry type="library" name="Gradle: com.android.support:swiperefreshlayout-28.0.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: android.arch.persistence.room:testing-1.1.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: org.jetbrains:annotations:13.0@jar" level="project" />
+    <orderEntry type="library" name="Gradle: __local_aars__:C.\Android\qm2\final_project\code\Group44\finalfinalProject\app\src\main\java\com\example\group44\newscollection\xUtils-2.6.14.jar:unspecified@jar" level="project" />
     <orderEntry type="library" name="Gradle: android.arch.lifecycle:livedata-1.1.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: com.android.support.test:rules-1.0.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: javax.inject:javax.inject:1@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:versionedparcelable-28.0.0" level="project" />
     <orderEntry type="library" name="Gradle: android.arch.core:runtime-1.1.1" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:loader-28.0.0" level="project" />
-    <orderEntry type="library" name="Gradle: __local_aars__:/Users/chensihang/Desktop/gottenFinalProject/final_project/code/Group44/finalfinalProject/app/src/main/java/com/example/group44/newscollection/xUtils-2.6.14.jar:unspecified@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:support-v4-28.0.0" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:viewpager-28.0.0" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:support-annotations:28.0.0@jar" level="project" />
