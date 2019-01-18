@@ -23,14 +23,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
-<<<<<<< HEAD
+
 import com.example.group44.newscollection.JSON.Feed;
 import com.example.group44.newscollection.persistence.FavoriteNews;
-=======
 import com.example.group44.newscollection.persistence.AppRepository;
 import com.example.group44.newscollection.persistence.FavoriteNews;
 import com.example.group44.newscollection.utils.UtilsFunction;
->>>>>>> fc5c5250300afd983895ad2884550ab4137f8324
+
 import com.lidroid.xutils.BitmapUtils;
 import com.wx.goodview.GoodView;
 

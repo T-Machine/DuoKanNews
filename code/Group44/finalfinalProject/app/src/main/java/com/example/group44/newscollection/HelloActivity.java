@@ -45,7 +45,7 @@ public class HelloActivity extends AppCompatActivity {
                     editor.putBoolean("isFirst", false);
                     editor.commit();
                 }else{
-                    Intent intent = new Intent(HelloActivity.this, MainActivity.class);
+                    Intent intent = new Intent(HelloActivity.this, CollectActivity.class);
                     startActivity(intent);
                     finish();
                 }
