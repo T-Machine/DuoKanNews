@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.PagerAdapter;
@@ -43,6 +44,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.lidroid.xutils.BitmapUtils;
+import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -73,6 +76,7 @@ public class MainActivity extends AppCompatActivity
     private ArrayList<Feed> mNewsList;
     private List<View> pages;
     Handler handler = new Handler();
+    RefreshLayout mRefreshLayout;             //下拉刷新
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +108,7 @@ public class MainActivity extends AppCompatActivity
         blackShodow = findViewById(R.id.blackShodow);
         view_pager = findViewById(R.id.view_pager);
         hidden_card = findViewById(R.id.hidden_card);
+        mRefreshLayout = findViewById(R.id.refreshLayout);
 
         mBitmapUtils = new BitmapUtils(this);
         mNewsList = new ArrayList<>();
@@ -144,6 +149,20 @@ public class MainActivity extends AppCompatActivity
         recyclerView = (RecyclerView)findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(myAdapter);
+
+        //下拉刷新
+        mRefreshLayout.setEnableRefresh(true);
+        mRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh(@NonNull RefreshLayout refreshLayout) {
+//                List<String>  data = initDatas();
+//                Message message = new Message();
+//                message.what = 1 ;
+//                message.obj = data ;
+//                mHandler.sendMessageDelayed(message,2000);
+                // 异步操作
+            }
+        });
 
         //隐藏按钮
         hidden_card.setOnClickListener(new View.OnClickListener() {
