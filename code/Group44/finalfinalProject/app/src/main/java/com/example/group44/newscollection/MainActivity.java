@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -44,6 +45,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.lidroid.xutils.BitmapUtils;
+import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -87,15 +90,21 @@ public class MainActivity extends AppCompatActivity
     private ArrayList<Feed> mNewsList;
     private List<View> pages;
 
+    RefreshLayout mRefreshLayout;             //下拉刷新
+
     // 加载框
     LoadingDialog ld;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ld = new LoadingDialog(MainActivity.this);
-        findViewById(R.id.drawer_layout).setVisibility(View.INVISIBLE);
-        ld.show();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // 加载框---------------
+        ld = new LoadingDialog(MainActivity.this);
+        ld.show();
+        findViewById(R.id.drawer_layout).setVisibility(View.INVISIBLE);
+        //------------------
+
         // 获得用户名
         SharedPreferences shared=getSharedPreferences("Username", MODE_PRIVATE);
         //侧滑 功能
@@ -122,6 +131,7 @@ public class MainActivity extends AppCompatActivity
         blackShodow = findViewById(R.id.blackShodow);
         view_pager = findViewById(R.id.view_pager);
         hidden_card = findViewById(R.id.hidden_card);
+        mRefreshLayout = findViewById(R.id.refreshLayout);
 
         mBitmapUtils = new BitmapUtils(this);
         mNewsList = new ArrayList<>();
@@ -162,6 +172,21 @@ public class MainActivity extends AppCompatActivity
         recyclerView = (RecyclerView)findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(myAdapter);
+
+        //下拉刷新
+        mRefreshLayout.setEnableRefresh(true);
+        mRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh(@NonNull RefreshLayout refreshLayout) {
+//                List<String>  data = initDatas();
+//                Message message = new Message();
+//                message.what = 1 ;
+//                message.obj = data ;
+//                mHandler.sendMessageDelayed(message,2000);
+                // 异步操作
+                refreshLayout.finishRefresh();
+            }
+        });
 
         //隐藏按钮
         hidden_card.setOnClickListener(new View.OnClickListener() {
