@@ -56,6 +56,7 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -137,7 +138,8 @@ public class MainActivity extends AppCompatActivity
                 }
                 if(s.getPubDate() != -1){
                     Integer i = s.getPubDate();
-                    time.setText(i.toString());
+                    Date pubDate = new Date(i);
+                    time.setText(pubDate.toString());
                 }
                 mBitmapUtils.display(img, s.getKpic());
             }
@@ -413,8 +415,11 @@ public class MainActivity extends AppCompatActivity
                 public void onClick(View view) {
                     Bundle bundle = new Bundle();
                     bundle.putString("url", item.getLink());
-                    bundle.putString("img",item.getKpic());
+                    bundle.putString("imgUrl",item.getKpic());
                     bundle.putString("source",item.getSource());
+                    bundle.putString("title", item.getTitle());
+//                    bundle.putString("pubDate");
+                    bundle.putString("digest", item.getSummary());
                     Intent intent = new Intent(MainActivity.this, NewsDetail.class);
                     intent.putExtra("message",bundle);
                     startActivity(intent);

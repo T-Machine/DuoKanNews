@@ -10,12 +10,10 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -25,7 +23,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
-import com.example.group44.newscollection.JSON.Feed;
+import com.example.group44.newscollection.persistence.AppRepository;
+import com.example.group44.newscollection.persistence.FavoriteNews;
+import com.example.group44.newscollection.utils.UtilsFunction;
 import com.lidroid.xutils.BitmapUtils;
 import com.wx.goodview.GoodView;
 
@@ -37,7 +37,6 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -106,7 +105,6 @@ public class NewsDetail extends AppCompatActivity {
         }
     }
 
-
     // 滑动
     ImageView imgview;
     ConstraintLayout buttonset;
@@ -114,11 +112,15 @@ public class NewsDetail extends AppCompatActivity {
     private BitmapUtils mBitmapUtils;
     private static String TAG = "DETAIL_ITEM";
 
+    // view
     private TextView mContentText;
     private ImageView mContentImg;
     private TextView mTitle;
-
     private VideoView mVideoView;
+
+    // data persistence
+    private AppRepository mDatasource;
+    private FavoriteNews mFavNewsCandidate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,11 +129,20 @@ public class NewsDetail extends AppCompatActivity {
         Intent intent = getIntent();
         //从intent取出bundle
         Bundle bundle = intent.getBundleExtra("message");
+
+        mFavNewsCandidate = UtilsFunction.newsGenerator(
+                bundle.getString("title"),
+                bundle.getString("digest"),
+                bundle.getString("url"),
+                bundle.getString("imgUrl")
+        );
         // setup view
         mContentImg = findViewById(R.id.detail_content_img);
         mContentText = findViewById(R.id.paragraph);
         mTitle = findViewById(R.id.title);
-//        mVideoView = findViewById(R.)
+
+        // setup database
+        mDatasource = new AppRepository(this);
 
         //获取数据
         url = bundle.getString("url");
@@ -139,15 +150,6 @@ public class NewsDetail extends AppCompatActivity {
         TextView src = findViewById(R.id.source);
         src.setText(bundle.getString("source"));
         mBitmapUtils = new BitmapUtils(this);
-        // todo: change
-//        mBitmapUtils.display(imgView, "http://wx2.sinaimg.cn/mw690/654b47daly1fzappphdgjj21420u0b29.jpg");
-//        String mainImg = bundle.getString("img");
-//        if(mainImg.length() == 0){
-//            imgView.setImageResource(R.drawable.logo);
-//        } else{
-//            Log.i("imgsrc",mainImg);
-//            mBitmapUtils.display(imgView, mainImg);
-//        }
 
         // RXJava获得内容
         Observable.create(new ObservableOnSubscribe<DetailItem>() {
@@ -170,13 +172,12 @@ public class NewsDetail extends AppCompatActivity {
 
                 // parsing problem here
                 Elements imgsURL = body.select("img");
-                Log.d(TAG, "subscribe: " + imgsURL.size());
+                Log.d(TAG, "subscribe: num of fetched images" + imgsURL.size());
 
                 for( Element e : imgsURL) {
                     // todo
                     String url = e.attr("abs:src");
                     if(url.endsWith("png") || url.endsWith("jpg")) {
-//                        url = "http" + url;
                         res.insertImgURL(url);
                         Log.d(TAG, "subscribe: " + url);
                     }
@@ -206,6 +207,7 @@ public class NewsDetail extends AppCompatActivity {
 
                         if(value.getImgURLNum() > 1) {
                             ImageView imgView = findViewById(R.id.newsImage);
+                            Log.d(TAG, "onNext: setup image done");
                             mBitmapUtils.display(imgView, value.getImgURL(value.getImgURLNum() - 2));
                         } else {
                             Log.d(TAG, "onNext: No imgs here");
@@ -220,7 +222,7 @@ public class NewsDetail extends AppCompatActivity {
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.d(TAG, " error occur" + e.getMessage());
+                        Log.d(TAG, " error occur : " + e.getMessage());
                     }
 
                     @Override
@@ -236,7 +238,7 @@ public class NewsDetail extends AppCompatActivity {
         collectionBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // 隐藏功能
+                // 隐藏功能,
                 if(findViewById(R.id.buttonSubset).getVisibility() == View.VISIBLE){
                     AlphaAnimation disappear = new AlphaAnimation(1, 0);
                     disappear.setDuration(100);
@@ -281,8 +283,7 @@ public class NewsDetail extends AppCompatActivity {
                 final View tv = v;
                 goodView.setText("不喜欢");
                 goodView.show(v);
-                //动作
-                //动作
+
                 AlphaAnimation disappearAnimation = new AlphaAnimation(1, 0);
                 disappearAnimation.setDuration(400);
                 disappearAnimation.setAnimationListener(new Animation.AnimationListener() {
@@ -365,6 +366,17 @@ public class NewsDetail extends AppCompatActivity {
                 final View tv = v;
                 goodView.setText("已收藏");
                 goodView.show(v);
+                // save all date into
+
+                if(mDatasource.queryNewsByTitle(mFavNewsCandidate.title).size() == 0) {
+                    // 未被收藏的新闻
+                    mDatasource.insertNewFavNews(mFavNewsCandidate);
+                    Log.d(TAG, "onClick: save favnews into database : " + mFavNewsCandidate.title);
+                } else {
+                    Log.d(TAG, "onClick: already insert" + mFavNewsCandidate.title);
+                    Toast.makeText(NewsDetail.this, "已被收藏，不要重复收藏", Toast.LENGTH_SHORT).show();
+                }
+                
                 //动作
                 AlphaAnimation disappearAnimation = new AlphaAnimation(1, 0);
                 disappearAnimation.setDuration(400);

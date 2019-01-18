@@ -15,12 +15,12 @@ public class FavoriteNews {
 
     @ColumnInfo(name = "title")
     public String title;
-
-    @ColumnInfo(name = "date")
-    public Date date;
-
-    @ColumnInfo(name = "source")
-    public String source;
+//
+//    @ColumnInfo(name = "date")
+//    public Date date;
+//
+//    @ColumnInfo(name = "source")
+//    public String source;
 
     @ColumnInfo(name = "digest")
     public String digest;
@@ -28,8 +28,12 @@ public class FavoriteNews {
     @ColumnInfo(name = "url")
     public String srcUrl;
 
-    @ColumnInfo(typeAffinity = ColumnInfo.BLOB)
-    public byte[] image;
+//    @ColumnInfo(typeAffinity = ColumnInfo.BLOB)
+//    public byte[] image;
+
+    @ColumnInfo(name = "image_url")
+    public String imgUrl;
+
 
 //    public FavoriteNews(String title, Date date, String )
 
