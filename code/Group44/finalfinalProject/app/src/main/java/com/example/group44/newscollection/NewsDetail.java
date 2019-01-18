@@ -64,31 +64,33 @@ public class NewsDetail extends AppCompatActivity {
             mBitmapUtils.display(imgView, mainImg);
         }
 
+
+        // RXJava获得内容
         Observable.create(new ObservableOnSubscribe<Feed>() {
             @Override
             public void subscribe(ObservableEmitter<Feed> emitter) throws IOException {
                 Document doc = Jsoup.connect(url).get();
                 Log.i("html", doc.title());
                 Element body = doc.body();
-                Elements p = body.select("p");
-                e.setSummary("");
-                String currentSummary = "";
-                for(Element element : p){
-                    currentSummary += element.text();
-                }
-                // 获取句子
-                for(int index = 0; index < 1; index++){
-                    Integer endSentance = currentSummary.indexOf("。");
-                    if(endSentance == -1) break;
-                    e.addSummary(currentSummary.substring(0, endSentance + 1));
-                    currentSummary = currentSummary.substring(endSentance + 1);
-                }
-                Log.i("Jsoup", e.getSummary());
-                if(e.getSummary().length() == 0){
-                    e.setSummary("找不到对应文本哦/./");
-                }
-                emitter.onNext(e);
-                emitter.onComplete();
+//                Elements p = body.select("p");
+//                e.setSummary("");
+//                String currentSummary = "";
+//                for(Element element : p){
+//                    currentSummary += element.text();
+//                }
+//                // 获取句子
+//                for(int index = 0; index < 1; index++){
+//                    Integer endSentance = currentSummary.indexOf("。");
+//                    if(endSentance == -1) break;
+//                    e.addSummary(currentSummary.substring(0, endSentance + 1));
+//                    currentSummary = currentSummary.substring(endSentance + 1);
+//                }
+//                Log.i("Jsoup", e.getSummary());
+//                if(e.getSummary().length() == 0){
+//                    e.setSummary("找不到对应文本哦/./");
+//                }
+//                emitter.onNext(e);
+//                emitter.onComplete();
             }
             // 需要回调主线程
         }).subscribeOn(Schedulers.computation())
@@ -102,19 +104,19 @@ public class NewsDetail extends AppCompatActivity {
 
                     @Override
                     public void onNext(final Feed value) {
-                        myAdapter.addItem(value);
-                        myAdapter.notifyDataSetChanged();
+//                        myAdapter.addItem(value);
+//                        myAdapter.notifyDataSetChanged();
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.d(TAG, "Error exist");
+//                        Log.d(TAG, "Error exist");
                     }
 
                     @Override
                     public void onComplete() {
-                        Log.d(TAG, "Complete Sending Paragraph");
-                        setViewPager();
+//                        Log.d(TAG, "Complete Sending Paragraph");
+//                        setViewPager();
                     }
                 });
 
