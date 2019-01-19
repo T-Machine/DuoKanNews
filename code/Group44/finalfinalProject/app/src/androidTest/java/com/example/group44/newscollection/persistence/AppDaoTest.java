@@ -80,6 +80,15 @@ public class AppDaoTest {
     }
 
     @Test
+    public void deleteWord() {
+        WordFrequency wf1 = new WordFrequency("aaa", 1);
+        mDao.insertWF(wf1);
+        assertEquals(mDao.getFrequency("aaa"), wf1.getFrequency());
+        mDao.deleteWord("aaa");
+        assertNull(mDao.getFrequency("aaa"));
+    }
+
+    @Test
     public void insertFavNews() {
         /**
          * this test function tests both query and insert functionality of DAO
