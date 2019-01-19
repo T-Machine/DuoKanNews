@@ -19,9 +19,8 @@
         android:id="@+id/loadingHint"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="22dp"
         app:layout_constraintTop_toBottomOf="@id/loading_gif"
         app:layout_constraintLeft_toLeftOf="@id/loading_gif"
-        android:text="加载中..."
+        android:text="信息比对中..."
         android:textSize="17dp"/>
 </android.support.constraint.ConstraintLayout>

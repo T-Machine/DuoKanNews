@@ -3,6 +3,7 @@ package com.example.group44.newscollection;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -11,7 +12,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -48,7 +52,7 @@ public class CollectActivity extends AppCompatActivity {
     private List<View> pages;
     // 加载框
     //LoadingDialog ld;
-
+    float x1,x2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,6 +78,25 @@ public class CollectActivity extends AppCompatActivity {
         for (int i = 0; i < temp.size(); i++) {
             mNewsList.add(temp.get(i));
         }
+
+        ConstraintLayout vw = findViewById(R.id.collectLayout);
+        vw.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_DOWN) {
+                    //当手指按下的时候
+                    x1 = event.getX();
+                }
+                if(event.getAction() == MotionEvent.ACTION_UP) {
+                    x2 = event.getX();
+                    if(x2 - x1 > 400) {
+                        Toast.makeText(CollectActivity.this, "回家", Toast.LENGTH_SHORT).show();
+                        CollectActivity.super.onBackPressed();
+                    }
+                }
+                return true;
+            }
+        });
 
         myAdapter = new MyRecyclerViewAdapter<FavoriteNews>(this, R.layout.item_recommend, mNewsList) {
             @Override

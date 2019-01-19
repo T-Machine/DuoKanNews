@@ -40,19 +40,19 @@ public class LoadingDialog extends Dialog{
             public void run(){
                 while(flag){
                     try{
-                        Thread.sleep(100);
+                        Thread.sleep(50);
                     }catch (InterruptedException e){
                         e.printStackTrace();
                     }
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            if(tv.getText().equals("加载中...")){
-                                tv.setText("加载中.");
-                            } else if(tv.getText().equals("加载中.")){
-                                tv.setText("加载中..");
+                            if(tv.getText().equals("信息比对中...")){
+                                tv.setText("信息比对中.");
+                            } else if(tv.getText().equals("信息比对中.")){
+                                tv.setText("信息比对中..");
                             } else{
-                                tv.setText("加载中...");
+                                tv.setText("信息比对中...");
                             }
                         }
                     });

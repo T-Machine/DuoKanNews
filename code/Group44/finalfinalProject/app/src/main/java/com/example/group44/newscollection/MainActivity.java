@@ -253,7 +253,6 @@ public class MainActivity extends AppCompatActivity
         view.getItem(0).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                Toast.makeText(MainActivity.this, "test", Toast.LENGTH_SHORT).show();
                 return false;
             }
         });
