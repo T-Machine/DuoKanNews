@@ -113,6 +113,19 @@ public class MainActivity extends AppCompatActivity
                 processData();
             } else{
                 // todo:无网络访问处理.
+                final Dialog dialog = new Dialog(getApplication());
+                View contentView = LayoutInflater.from(getApplication()).inflate(
+                        R.layout.dialog_recommend, null);
+                dialog.setContentView(contentView);
+                dialog.setCanceledOnTouchOutside(true);
+                Button OK = contentView.findViewById(R.id.OkButton);
+                OK.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
             }
         }
     };
@@ -316,7 +329,7 @@ public class MainActivity extends AppCompatActivity
 //                message.what = 1 ;
 //                message.obj = data ;
 //                mHandler.sendMessageDelayed(message,2000);
-                // 异步操作
+//                // 异步操作
                 refreshLayout.finishRefresh();
             }
         });
