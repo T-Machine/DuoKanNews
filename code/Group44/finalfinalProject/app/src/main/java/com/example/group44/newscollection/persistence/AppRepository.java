@@ -90,6 +90,15 @@ public class AppRepository {
         return mAppDao.getAllWordFrequencyPair();
     }
 
+    /**
+     * 删除特定的词
+     * @return
+     */
+    public void deleteAllWFPair(String word) {
+        mAppDao.deleteWord(word);
+    }
+
+
     // -------------------------------（收藏新闻相关接口）---------------------------------------------//
 
     /**
