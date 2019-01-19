@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
@@ -22,6 +23,7 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Layout;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -98,6 +100,10 @@ public class MainActivity extends AppCompatActivity
     private List<View> pages;
     RefreshLayout mRefreshLayout;             //下拉刷新
 
+
+    //字体大小
+    float mLastTextSize = (float) 1.0;
+    float mTextSize = (float) 1.0;
     // 加载框
     LoadingDialog ld;
     @Override
@@ -134,7 +140,7 @@ public class MainActivity extends AppCompatActivity
         // 获得用户名
         SharedPreferences shared=getSharedPreferences("Username", MODE_PRIVATE);
         //侧滑 功能
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        final NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         //获取NavigationView上的组件
         View v = navigationView.getHeaderView(0);
@@ -161,6 +167,9 @@ public class MainActivity extends AppCompatActivity
                 //view.getItem(0).setChecked(true);
                 //view.getItem(1).setChecked(false);
                 Intent intent1 = new Intent(MainActivity.this, CollectActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putFloat("size", mTextSize);
+                intent1.putExtras(bundle);
                 startActivity(intent1);
                 //view.getItem(0).setChecked(true);
                 //view.getItem(1).setChecked(false);
@@ -181,6 +190,16 @@ public class MainActivity extends AppCompatActivity
             public boolean onMenuItemClick(MenuItem item) {
                 Toast.makeText(MainActivity.this, "test", Toast.LENGTH_SHORT).show();
                 //调整字体大小
+                mLastTextSize = mTextSize;
+                mTextSize = (float) 1.5;
+                myAdapter.notifyDataSetChanged();
+                for (int i = 0; i < pages.size(); i++) {
+                    View one = pages.get(i);
+                    TextView title = one.findViewById(R.id.previewTitle);
+                    TextView content = one.findViewById(R.id.previewContent);
+                    title.setTextSize(title.getTextSize()/mLastTextSize*mTextSize/3);
+                    content.setTextSize(content.getTextSize()/mLastTextSize*mTextSize/3);
+                }
                 return false;
             }
         });
@@ -213,6 +232,8 @@ public class MainActivity extends AppCompatActivity
             public void convert(MyViewHolder holder, Feed s) {
                 ImageView img = holder.getView(R.id.iv_icon);
                 TextView title = holder.getView(R.id.tv_item_title);
+                //Toast.makeText(MainActivity.this, String.valueOf(title.getTextSize()), Toast.LENGTH_SHORT).show();
+                title.setTextSize(title.getTextSize()/mLastTextSize*mTextSize/3);
                 TextView time = holder.getView(R.id.tv_item_date);
                 if(s.getTitle() != null){
                     title.setText(s.getTitle());
@@ -504,6 +525,8 @@ public class MainActivity extends AppCompatActivity
             TextView read = card_view.findViewById(R.id.readMore);
             TextView title = card_view.findViewById(R.id.previewTitle);
             TextView content = card_view.findViewById(R.id.previewContent);
+            title.setTextSize(title.getTextSize()/mLastTextSize*mTextSize/3);
+            content.setTextSize(content.getTextSize()/mLastTextSize*mTextSize/3);
             ImageView img = card_view.findViewById(R.id.iv_icon);
             content.setText(item.getSummary());
             System.out.println(item.getSummary());
@@ -519,6 +542,7 @@ public class MainActivity extends AppCompatActivity
                     bundle.putString("title", item.getTitle());
 //                    bundle.putString("pubDate");
                     bundle.putString("digest", item.getSummary());
+                    bundle.putFloat("size", mTextSize);
                     Intent intent = new Intent(MainActivity.this, NewsDetail.class);
                     intent.putExtra("message",bundle);
                     startActivity(intent);
@@ -531,4 +555,5 @@ public class MainActivity extends AppCompatActivity
 
         return pages;
     }
+
 }

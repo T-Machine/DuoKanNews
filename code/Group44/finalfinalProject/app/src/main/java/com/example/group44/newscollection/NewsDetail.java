@@ -144,6 +144,9 @@ public class NewsDetail extends AppCompatActivity {
 
     Handler handler = new Handler();
 
+    //字体大小
+    float mTextSize;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         final GoodView goodView = new GoodView(this);
@@ -152,6 +155,7 @@ public class NewsDetail extends AppCompatActivity {
         Intent intent = getIntent();
         //从intent取出bundle
         Bundle bundle = intent.getBundleExtra("message");
+
         commonDialog = new CommonDialog(NewsDetail.this);
         mFavNewsCandidate = UtilsFunction.newsGenerator(
                 bundle.getString("title"),
@@ -162,6 +166,12 @@ public class NewsDetail extends AppCompatActivity {
         mContentText = findViewById(R.id.paragraph);
         mTitle = findViewById(R.id.title);
 
+
+        //调整字体大小
+        mTextSize = bundle.getFloat("size");
+        TextView tv1 = findViewById(R.id.paragraph);
+        tv1.setTextSize(tv1.getTextSize()*mTextSize/3);
+
         // setup database
         mDatasource = new AppRepository(this);
 
@@ -170,7 +180,9 @@ public class NewsDetail extends AppCompatActivity {
         Log.d(TAG, "onCreate: url => " + url);
         TextView src = findViewById(R.id.source);
         src.setText(bundle.getString("source"));
+        //src.setTextSize(src.getTextSize()*2);
         mBitmapUtils = new BitmapUtils(this);
+
 
         // 判断网络状态-------
         ConnectivityManager connectivityManager = (ConnectivityManager) this.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
