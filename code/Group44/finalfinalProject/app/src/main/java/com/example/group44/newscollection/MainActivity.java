@@ -125,8 +125,8 @@ public class MainActivity extends AppCompatActivity
                 }
             } else{
                 // todo:无网络访问处理.
-                final Dialog dialog = new Dialog(getApplication());
-                View contentView = LayoutInflater.from(getApplication()).inflate(
+                final Dialog dialog = new Dialog(MainActivity.this);
+                View contentView = LayoutInflater.from(MainActivity.this).inflate(
                         R.layout.dialog_recommend, null);
                 dialog.setContentView(contentView);
                 dialog.setCanceledOnTouchOutside(true);
