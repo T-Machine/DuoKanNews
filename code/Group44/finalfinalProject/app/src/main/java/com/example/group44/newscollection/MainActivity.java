@@ -38,6 +38,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -105,6 +107,10 @@ public class MainActivity extends AppCompatActivity
     RefreshLayout mRefreshLayout;             //下拉刷新
     ArrayList<Feed> feedList;
 
+    //设置的状态
+    //public static final String PREFERENCE_NAME = "SaveSetting";
+
+
     private Handler handler = new Handler() {
         public void handleMessage(Message msg) {
             // 获得数据
@@ -112,6 +118,7 @@ public class MainActivity extends AppCompatActivity
                 feedList = MainActivityNetworkVisit.getInstance().getFeedList();
                 processData();
                 MainActivityNetworkVisit.getInstance().getMost();
+
             } else{
                 // todo:无网络访问处理.
                 final Dialog dialog = new Dialog(getApplication());
@@ -142,6 +149,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         HandlerManager.getInstance().setHandler(handler);
+        final SharedPreferences sharedPreferences = getSharedPreferences ( "Setting", Context.MODE_PRIVATE );
 
         // 加载框---------------
         ld = new LoadingDialog(MainActivity.this);
@@ -176,11 +184,48 @@ public class MainActivity extends AppCompatActivity
         //获取NavigationView上的组件
         View v = navigationView.getHeaderView(0);
         TextView tvu = v.findViewById(R.id.gotUsername);
-        ImageView editView = v.findViewById(R.id.editBtn);
+        final ImageView editView = v.findViewById(R.id.editBtn);
         editView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                final View tv = v;
 
+                AlphaAnimation disappearAnimation = new AlphaAnimation(1, 0);
+                disappearAnimation.setDuration(400);
+                disappearAnimation.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        UserDialog ud = new UserDialog(MainActivity.this, new editView() {
+                            @Override
+                            public void edit(String str) {
+                                final NavigationView navigationView = findViewById(R.id.nav_view);
+                                //获取NavigationView上的组件
+                                View v = navigationView.getHeaderView(0);
+                                TextView tvu = v.findViewById(R.id.gotUsername);
+                                tvu.setText(str);
+                                // 缓存用户名
+                                SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+                                SharedPreferences.Editor editor=shared.edit();
+                                //第一次进入跳转
+                                editor.putString("user", tvu.getText().toString());
+                                Log.i("set username", tvu.getText().toString());
+                                editor.commit();
+                            }
+                        });
+                        ud.show();
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+                v.startAnimation(disappearAnimation);
             }
         });
         ImageView iv = v.findViewById(R.id.hostImg);
@@ -190,6 +235,7 @@ public class MainActivity extends AppCompatActivity
         view.getItem(1).setCheckable(false);
         view.getItem(2).setCheckable(false);
         view.getItem(3).setCheckable(false);
+
         //set the menu listener
         view.getItem(0).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
@@ -219,14 +265,20 @@ public class MainActivity extends AppCompatActivity
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 Toast.makeText(MainActivity.this, "test", Toast.LENGTH_SHORT).show();
+                SharedPreferences.Editor editor = sharedPreferences.edit();
                 if(view.getItem(2).getTitle().toString().equals("开启推送模式")) {
                     view.getItem(2).setTitle("关闭推送模式");
                     /*
                     * 推送部分
                     * */
+                    editor.putBoolean("isBroad", true);
+                    editor.commit();
+                    sendBroadcast();
                 }
                 else {
                     view.getItem(2).setTitle("开启推送模式");
+                    editor.putBoolean("isBroad", false);
+                    editor.commit();
                 }
                 return false;
             }
@@ -415,6 +467,11 @@ public class MainActivity extends AppCompatActivity
         //----------------------------------
         //推荐内容部分
         //----------------------------------
+        boolean isBroad = sharedPreferences.getBoolean("isBroad", false);
+        if(isBroad) {
+            view.getItem(2).setTitle("关闭推送模式");
+            sendBroadcast();
+        }
 
     }
 
@@ -628,5 +685,25 @@ public class MainActivity extends AppCompatActivity
                         findViewById(R.id.drawer_layout).setVisibility(View.VISIBLE);
                     }
                 });
+    }
+
+    public interface editView {
+        void edit(String str);
+    }
+
+    private void sendBroadcast() {
+        if(feedList != null) {
+            Bundle bundle1 = new Bundle();
+            bundle1.putString("url", feedList.get(0).getLink());
+            bundle1.putString("imgUrl",feedList.get(0).getKpic());
+            bundle1.putString("source",feedList.get(0).getSource());
+            bundle1.putString("title", feedList.get(0).getTitle());
+//                    bundle.putString("pubDate");
+            bundle1.putString("digest", feedList.get(0).getSummary());
+            bundle1.putFloat("size", mTextSize);
+            Intent intentBroadcast = new Intent("recommend");
+            intentBroadcast.putExtras(bundle1);
+            sendBroadcast(intentBroadcast);
+        }
     }
 }
