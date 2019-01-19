@@ -180,7 +180,6 @@ public class NewsDetail extends AppCompatActivity {
         oldManModel = bundle.getBoolean("oldManModel");
         TextView tv1 = findViewById(R.id.paragraph);
 
-        //tv1.setTextSize(tv1.getTextSize()*mTextSize*2/3);
 
         //改变字体大小
         //tv1.setTextSize(tv1.getTextSize()*mTextSize*2/3);
