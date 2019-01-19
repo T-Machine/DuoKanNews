@@ -27,7 +27,7 @@ public interface AppDao {
     void deleteAll();
 
     @Query("SELECT frequency FROM word_frequency_table WHERE word == :queryWord")
-    int getFrequency(String queryWord);
+    Integer getFrequency(String queryWord);
 
     // conflict error
     @Insert

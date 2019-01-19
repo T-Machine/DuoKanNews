@@ -18,6 +18,7 @@ public class AppRepository {
     private AppDao mAppDao;
 
     /**
+     * 构造函数
      * constructor of repository
      * @param application: context of activity
      */
@@ -26,26 +27,22 @@ public class AppRepository {
         mAppDao = db.wordFrequcyDao();
     }
 
+    //---------------------------------------（单词频率相关接口）----------------------------------//
+
     /**
-     * query frequency of a specific word
+     * 查询特定单词的频数
+     *
      * @param word
      * @return frequency
      */
-    public int getFrequency(String word) {
-
+    public Integer getFrequency(String word) {
         return mAppDao.getFrequency(word);
     }
 
     /**
-     * update frequency a specific word
-     * @param newWf, a new instance of word-frequency pair
-     */
-    public void updateFrequency(WordFrequency newWf) {
-        mAppDao.updateFrequency(newWf);
-    }
-
-    /**
+     * 增加某个单词的频数 + 1
      * increase specific word frequency by 1
+     *
      * @param word
      */
     public void increaseFrenquency(String word) {
@@ -53,6 +50,7 @@ public class AppRepository {
     }
 
     /**
+     * 减少某个单词的频数 - 1
      * increase specific word frequency by 1
      * @param word
      * @return false if frequency already has been zero
@@ -65,10 +63,26 @@ public class AppRepository {
         return true;
     }
 
+    /**
+     * 添加新的单词, 频数设置为1【todo:检查是否冲突】
+     * @param word
+     */
     public void insertNewWord(String word) {
         mAppDao.insertWF(new WordFrequency(word, 1));
     }
 
+
+    /**
+     * 更新特定单词的频数, 需要先确保这个单词已经在表中，使用insert插入。
+     * update frequency a specific word
+     * @param newWf, a new instance of word-frequency pair
+     */
+    public void updateFrequency(WordFrequency newWf) {
+        mAppDao.updateFrequency(newWf);
+    }
+
+
+    // -------------------------------（收藏新闻相关接口）---------------------------------------------//
 
     /**
      * insert a user's favorite news into database

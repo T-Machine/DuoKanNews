@@ -1,10 +1,15 @@
 package com.example.group44.newscollection;
 
+
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,6 +26,7 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Layout;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,9 +38,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.group44.newscollection.JSON.Feed;
 import com.example.group44.newscollection.JSON.JsonRootBean;
@@ -111,6 +119,10 @@ public class MainActivity extends AppCompatActivity
 
 
 
+
+    //字体大小
+    float mLastTextSize = (float) 1.0;
+    float mTextSize = (float) 1.0;
     // 加载框
     LoadingDialog ld;
     @Override
@@ -123,6 +135,7 @@ public class MainActivity extends AppCompatActivity
         // 给连接
         String type = shared.getString("collection","1,2,3,4,5,6,7,8");
         HandlerManager.getInstance().setHandler(handler);
+        MainActivityNetworkVisit.getInstance().setContext(MainActivity.this);
         MainActivityNetworkVisit.getInstance().setUrl(type);
         Log.i("send url to visit util", type);
 
@@ -132,14 +145,93 @@ public class MainActivity extends AppCompatActivity
         findViewById(R.id.drawer_layout).setVisibility(View.INVISIBLE);
         //------------------
 
+        // 判断网络状态-------
+        ConnectivityManager connectivityManager = (ConnectivityManager) this.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo info = connectivityManager.getActiveNetworkInfo();
+        if(info == null || !info.isConnected()) {
+            final Dialog dialog = new Dialog(this);
+            View contentView = LayoutInflater.from(this).inflate(
+                    R.layout.dialog_recommend, null);
+            dialog.setContentView(contentView);
+            dialog.setCanceledOnTouchOutside(true);
+            Button OK = contentView.findViewById(R.id.OkButton);
+            OK.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
+                }
+            });
+            dialog.show();
+        }
+        //------------------
+
         // 获得用户名
         //侧滑 功能
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        final NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         //获取NavigationView上的组件
         View v = navigationView.getHeaderView(0);
         TextView tvu = v.findViewById(R.id.gotUsername);
         ImageView iv = v.findViewById(R.id.hostImg);
+        final Menu view = navigationView.getMenu();
+
+        view.getItem(0).setCheckable(false);
+        view.getItem(1).setCheckable(false);
+        view.getItem(2).setCheckable(false);
+        view.getItem(3).setCheckable(false);
+        //set the menu listener
+        view.getItem(0).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Toast.makeText(MainActivity.this, "test", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        });
+
+        view.getItem(1).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                //view.getItem(0).setChecked(true);
+                //view.getItem(1).setChecked(false);
+                Intent intent1 = new Intent(MainActivity.this, CollectActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putFloat("size", mTextSize);
+                intent1.putExtras(bundle);
+                startActivity(intent1);
+                //view.getItem(0).setChecked(true);
+                //view.getItem(1).setChecked(false);
+                return false;
+            }
+        });
+
+        view.getItem(2).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Toast.makeText(MainActivity.this, "test", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        });
+
+        view.getItem(3).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Toast.makeText(MainActivity.this, "test", Toast.LENGTH_SHORT).show();
+                //调整字体大小
+                mLastTextSize = mTextSize;
+                mTextSize = (float) 1.5;
+                myAdapter.notifyDataSetChanged();
+                for (int i = 0; i < pages.size(); i++) {
+                    View one = pages.get(i);
+                    TextView title = one.findViewById(R.id.previewTitle);
+                    TextView content = one.findViewById(R.id.previewContent);
+                    title.setTextSize(title.getTextSize()/mLastTextSize*mTextSize/3);
+                    content.setTextSize(content.getTextSize()/mLastTextSize*mTextSize/3);
+                }
+                return false;
+            }
+        });
+
+
         iv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -167,6 +259,8 @@ public class MainActivity extends AppCompatActivity
             public void convert(MyViewHolder holder, Feed s) {
                 ImageView img = holder.getView(R.id.iv_icon);
                 TextView title = holder.getView(R.id.tv_item_title);
+                //Toast.makeText(MainActivity.this, String.valueOf(title.getTextSize()), Toast.LENGTH_SHORT).show();
+                title.setTextSize(title.getTextSize()/mLastTextSize*mTextSize/3);
                 TextView time = holder.getView(R.id.tv_item_date);
                 if(s.getTitle() != null){
                     title.setText(s.getTitle());
@@ -369,6 +463,8 @@ public class MainActivity extends AppCompatActivity
             TextView read = card_view.findViewById(R.id.readMore);
             TextView title = card_view.findViewById(R.id.previewTitle);
             TextView content = card_view.findViewById(R.id.previewContent);
+            title.setTextSize(title.getTextSize()/mLastTextSize*mTextSize/3);
+            content.setTextSize(content.getTextSize()/mLastTextSize*mTextSize/3);
             ImageView img = card_view.findViewById(R.id.iv_icon);
             content.setText(item.getSummary());
             title.setText(item.getTitle());
@@ -383,6 +479,7 @@ public class MainActivity extends AppCompatActivity
                     bundle.putString("title", item.getTitle());
 //                    bundle.putString("pubDate");
                     bundle.putString("digest", item.getSummary());
+                    bundle.putFloat("size", mTextSize);
                     Intent intent = new Intent(MainActivity.this, NewsDetail.class);
                     intent.putExtra("message",bundle);
                     startActivity(intent);
@@ -395,7 +492,6 @@ public class MainActivity extends AppCompatActivity
 
         return pages;
     }
-
     // 对获得的新闻进行显示
     private void processData(){
         Observable.create(new ObservableOnSubscribe<Feed>() {

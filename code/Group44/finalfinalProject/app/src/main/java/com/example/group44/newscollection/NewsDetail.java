@@ -1,5 +1,6 @@
 package com.example.group44.newscollection;
 
+import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -7,6 +8,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,11 +17,13 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -139,6 +144,9 @@ public class NewsDetail extends AppCompatActivity {
 
     Handler handler = new Handler();
 
+    //字体大小
+    float mTextSize;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         final GoodView goodView = new GoodView(this);
@@ -147,6 +155,7 @@ public class NewsDetail extends AppCompatActivity {
         Intent intent = getIntent();
         //从intent取出bundle
         Bundle bundle = intent.getBundleExtra("message");
+
         commonDialog = new CommonDialog(NewsDetail.this);
         mFavNewsCandidate = UtilsFunction.newsGenerator(
                 bundle.getString("title"),
@@ -157,6 +166,12 @@ public class NewsDetail extends AppCompatActivity {
         mContentText = findViewById(R.id.paragraph);
         mTitle = findViewById(R.id.title);
 
+
+        //调整字体大小
+        mTextSize = bundle.getFloat("size");
+        TextView tv1 = findViewById(R.id.paragraph);
+        tv1.setTextSize(tv1.getTextSize()*mTextSize/3);
+
         // setup database
         mDatasource = new AppRepository(this);
 
@@ -165,7 +180,29 @@ public class NewsDetail extends AppCompatActivity {
         Log.d(TAG, "onCreate: url => " + url);
         TextView src = findViewById(R.id.source);
         src.setText(bundle.getString("source"));
+        //src.setTextSize(src.getTextSize()*2);
         mBitmapUtils = new BitmapUtils(this);
+
+
+        // 判断网络状态-------
+        ConnectivityManager connectivityManager = (ConnectivityManager) this.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo info = connectivityManager.getActiveNetworkInfo();
+        if(info == null || !info.isConnected()) {
+            final Dialog dialog = new Dialog(this);
+            View contentView = LayoutInflater.from(this).inflate(
+                    R.layout.dialog_recommend, null);
+            dialog.setContentView(contentView);
+            dialog.setCanceledOnTouchOutside(true);
+            Button OK = contentView.findViewById(R.id.OkButton);
+            OK.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
+                }
+            });
+            dialog.show();
+        }
+        //------------------
 
         // RXJava获得内容
         Observable.create(new ObservableOnSubscribe<DetailItem>() {
@@ -178,6 +215,10 @@ public class NewsDetail extends AppCompatActivity {
 
                 // 判断是否存在视频并增加跳转
                 Elements videoElements = body.select(".art_video");
+                Elements videoElements2 = body.select(".aplayer");
+                if(videoElements.size() == 0 && videoElements2.size() != 0){
+                    videoElements = videoElements2;
+                }
                 if(videoElements.size() != 0){
                     Log.i("figure.art_video",url);
                     handler.post(new Runnable() {
@@ -236,7 +277,12 @@ public class NewsDetail extends AppCompatActivity {
 
                 StringBuilder buf = new StringBuilder();
                 for(Element e : p) {
-                    String s = e.text();
+                    String s = "      ";
+                    s += e.text();
+                    if(s.indexOf('\n') == -1) {
+                        s += '\n';
+                        s += '\n';
+                    }
                     // 去除干扰
                     if(s.indexOf("图为") != -1) continue;
                     buf.append(s);
@@ -256,9 +302,9 @@ public class NewsDetail extends AppCompatActivity {
                         Log.d(TAG, "subscribe: " + url);
                     }
                 }
-                if(p != null) {
-                    res.setText(p.text());
-                }
+//                if(p != null) {
+//                    res.setText(p.text());          /////加两次?
+//                }
                 res.setTitle(doc.title());
                 Log.d(TAG, "subscribe: setup done");
                 emitter.onNext(res);
@@ -286,31 +332,7 @@ public class NewsDetail extends AppCompatActivity {
                         } else {
                             Log.d(TAG, "onNext: No imgs here");
                         }
-
-                        String origin = value.getText();
-                        // 分句
-                        ArrayList<String> subSentances = new ArrayList<>();
-                        while(origin.indexOf("。") != -1){
-                            subSentances.add(origin.substring(0, origin.indexOf("。") + 1));
-                            origin = origin.substring(origin.indexOf("。") + 1);
-                        }
-
-                        // 分段
-                        String complete = "        ";
-                        if(subSentances.size() > 14){
-                            Integer subParagraph = subSentances.size() / 7;
-                            for(int i = 0; i < subSentances.size(); ++i){
-                                complete += subSentances.get(i);
-                                if(i % subParagraph == 0 && i != 0){
-                                    complete += "\n\n       ";
-                                }
-                            }
-                        }else{
-                            for(String e : subSentances){
-                                complete += e;
-                            }
-                        }
-                        mContentText.setText(complete);
+                        mContentText.setText(value.getText());
                         String title = value.getTitle();
                         if(title.indexOf("_手机新浪网") != -1){
                             title = title.substring(0,title.indexOf("_手机新浪网"));
@@ -337,33 +359,33 @@ public class NewsDetail extends AppCompatActivity {
                             // 排序
                             class SortByFrequency implements Comparator {
                                 public int compare(Object o1, Object o2) {
-                                    String_val s1 = (String_val) o1;
-                                    String_val s2 = (String_val) o2;
-                                    if (s1.getVal() < s2.getVal())
+                                    WordFrequency s1 = (WordFrequency) o1;
+                                    WordFrequency s2 = (WordFrequency) o2;
+                                    if (s1.getFrequency() < s2.getFrequency())
                                         return 1;
-                                    else if(s1.getVal() == s2.getVal()) return 0;
+                                    else if(s1.getFrequency() == s2.getFrequency()) return 0;
                                     return -1;
                                 }
                             }
 
                             @Override
                             public void run(){
-                                ArrayList<String_val> local_str_val = new ArrayList<>();
+                                ArrayList<WordFrequency> local_str_val = new ArrayList<>();
                                 ArrayList<String> wordList = JiebaSegmenter.getJiebaSegmenterSingleton().getDividedString(analizedString);
                                 for(String str : wordList){
                                     if(str.length() <= 2) continue;
                                     // 筛选
                                     if(!DetectWords.inValid(str)) continue;
                                     boolean flag = false;
-                                    for(String_val e : local_str_val){
-                                        if(e.getChara().equals(str)){
+                                    for(WordFrequency e : local_str_val){
+                                        if(e.getWord().equals(str)){
                                             local_str_val.get(local_str_val.indexOf(e)).add();
                                             flag = true;
                                             break;
                                         }
                                     }
                                     if(!flag){
-                                        String_val tmp = new String_val(str, 1);
+                                        WordFrequency tmp = new WordFrequency(str, 1);
                                         local_str_val.add(tmp);
                                     }
                                 }
@@ -374,10 +396,18 @@ public class NewsDetail extends AppCompatActivity {
                                 // 排序
                                 Collections.sort(local_str_val, new SortByFrequency());
                                 for(int i = 0; i < local_str_val.size() && i < 4; i++){
-                                    String_val e = local_str_val.get(i);
-                                    favWords.add(e.getChara());
-                                    Log.i("analyze", e.getChara() + " " + e.getVal().toString());
-                                    // todo:永久化保存数据。如果存在数据则加上对应的val值，如果没有则进行保存。
+                                    WordFrequency e = local_str_val.get(i);
+                                    favWords.add(e.getWord());
+                                    Log.d("analyze", e.getWord() + " " + e.getFrequency().toString());
+                                    // todo:永久化保存数据。如果存在数据则加上对应的val值，如果没有则进行保存。=> done
+
+                                    WordFrequency wf = new WordFrequency(e.getWord(), e.getFrequency());
+                                    if(mDatasource.getFrequency(e.getWord()) == null) {
+                                        Log.d(TAG, "run: insert new word into word_frequency table");
+                                        mDatasource.insertNewWord(e.getWord());
+                                    }
+                                    mDatasource.updateFrequency(wf);
+                                    Log.d(TAG, "run: frequency related " + e.getWord() + mDatasource.getFrequency(e.getWord()));
                                 }
                             }
                         }.start();
