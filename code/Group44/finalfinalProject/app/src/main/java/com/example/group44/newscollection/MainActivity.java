@@ -359,7 +359,7 @@ public class MainActivity extends AppCompatActivity
         tvu.setText(cs);
         isCardShow = false;
         blackShodow = findViewById(R.id.blackShodow);
-        view_pager = findViewById(R.id.view_pager);
+        view_pager = findViewById(R.id.view_pager)
         hidden_card = findViewById(R.id.hidden_card);
         mRefreshLayout = findViewById(R.id.refreshLayout);
 
