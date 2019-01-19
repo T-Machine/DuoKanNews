@@ -15,11 +15,11 @@
         <item
             android:id="@+id/nav_slideshow"
             android:icon="@drawable/ic_menu_slideshow"
-            android:title="待定" />
+            android:title="开启推送模式" />
         <item
             android:id="@+id/nav_manage"
             android:icon="@drawable/ic_menu_manage"
-            android:title="调整字体大小" />
+            android:title="开启老人模式" />
     </group>
 
     <item android:title="其他选项">

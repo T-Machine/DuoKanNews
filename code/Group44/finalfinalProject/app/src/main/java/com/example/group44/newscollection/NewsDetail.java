@@ -170,7 +170,7 @@ public class NewsDetail extends AppCompatActivity {
         //调整字体大小
         mTextSize = bundle.getFloat("size");
         TextView tv1 = findViewById(R.id.paragraph);
-        tv1.setTextSize(tv1.getTextSize()*mTextSize/3);
+        tv1.setTextSize(tv1.getTextSize()*mTextSize*2/3);
 
         // setup database
         mDatasource = new AppRepository(this);
