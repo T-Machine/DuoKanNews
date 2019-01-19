@@ -147,6 +147,8 @@ public class NewsDetail extends AppCompatActivity {
     //字体大小
     float mTextSize;
     LoadingDialog ld;
+    Boolean oldManModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         final GoodView goodView = new GoodView(this);
@@ -175,8 +177,20 @@ public class NewsDetail extends AppCompatActivity {
 
         //调整字体大小
         mTextSize = bundle.getFloat("size");
+        oldManModel = bundle.getBoolean("oldManModel");
         TextView tv1 = findViewById(R.id.paragraph);
+<<<<<<< HEAD
         //tv1.setTextSize(tv1.getTextSize()*mTextSize*2/3);
+=======
+        //改变字体大小
+        //tv1.setTextSize(tv1.getTextSize()*mTextSize*2/3);
+        if(oldManModel == false) {
+            tv1.setTextSize(17);
+        }
+        else {
+            tv1.setTextSize(20);
+        }
+>>>>>>> dc62cf70fa97223f2f27c56f6d8d6b26b67f730f
 
         // setup database
         mDatasource = new AppRepository(this);

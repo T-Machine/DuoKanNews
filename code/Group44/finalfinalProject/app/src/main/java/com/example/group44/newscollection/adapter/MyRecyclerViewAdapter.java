@@ -30,7 +30,7 @@ public abstract class MyRecyclerViewAdapter<T> extends RecyclerView.Adapter<MyVi
     }
     public interface OnItemClickListener{
         void onClick(int position);
-        //void onLongClick(int position);
+        void onLongClick(int position);
     }
     public void setOnItemClickListener(OnItemClickListener _onItemClickListener) {
         this.onItemClickListener = _onItemClickListener;
@@ -82,13 +82,13 @@ public abstract class MyRecyclerViewAdapter<T> extends RecyclerView.Adapter<MyVi
                     onItemClickListener.onClick(holder.getAdapterPosition());
                 }
             });
-//            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-//                @Override
-//                public boolean onLongClick(View view) {
-//                    onItemClickListener.onLongClick(holder.getAdapterPosition());
-//                    return true;
-//                }
-//            });
+            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    onItemClickListener.onLongClick(holder.getAdapterPosition());
+                    return true;
+                }
+            });
         }
     }
     //重写onBindViewHolder

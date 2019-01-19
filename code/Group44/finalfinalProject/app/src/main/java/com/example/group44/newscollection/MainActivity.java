@@ -119,6 +119,19 @@ public class MainActivity extends AppCompatActivity
 
             } else{
                 // todo:无网络访问处理.
+                final Dialog dialog = new Dialog(getApplication());
+                View contentView = LayoutInflater.from(getApplication()).inflate(
+                        R.layout.dialog_recommend, null);
+                dialog.setContentView(contentView);
+                dialog.setCanceledOnTouchOutside(true);
+                Button OK = contentView.findViewById(R.id.OkButton);
+                OK.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
             }
         }
     };
@@ -128,6 +141,7 @@ public class MainActivity extends AppCompatActivity
 
     //字体大小
     float mTextSize = (float) 1.0;
+    Boolean oldManModel = false;
     // 加载框
     LoadingDialog ld;
     @Override
@@ -237,25 +251,51 @@ public class MainActivity extends AppCompatActivity
         view.getItem(3).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                Toast.makeText(MainActivity.this, "test", Toast.LENGTH_SHORT).show();
-                //调整字体大小
-                if (mTextSize > 1) {
-                    mTextSize = (float) 1/(float) 1.5;
-                    view.getItem(3).setTitle("开启老人模式");
-                }
-                else {
-                    mTextSize = (float) 1.5;
+                if(oldManModel == false) {
+                    oldManModel = true;
                     view.getItem(3).setTitle("关闭老人模式");
                 }
-                myAdapter.notifyDataSetChanged();
+                else {
+                    oldManModel = false;
+                    view.getItem(3).setTitle("开启老人模式");
+                }
                 for (int i = 0; i < pages.size(); i++) {
                     View one = pages.get(i);
                     TextView title = one.findViewById(R.id.previewTitle);
                     TextView content = one.findViewById(R.id.previewContent);
-                    title.setTextSize(title.getTextSize()*mTextSize/3);
-                    content.setTextSize(content.getTextSize()*mTextSize/3);
+                    //修改字体大小
+                    if(oldManModel == false) {
+                        title.setTextSize(20);
+                        content.setTextSize(16);
+                    }
+                    else {
+                        title.setTextSize(25);
+                        content.setTextSize(20);
+                    }
                 }
+                myAdapter.notifyDataSetChanged();
                 return false;
+
+                //Toast.makeText(MainActivity.this, "test", Toast.LENGTH_SHORT).show();
+                //调整字体大小
+//                if (mTextSize > 1) {
+//                    mTextSize = (float) 1/(float) 1.5;
+//                    view.getItem(3).setTitle("开启老人模式");
+//                }
+//                else {
+//                    mTextSize = (float) 1.5;
+//                    view.getItem(3).setTitle("关闭老人模式");
+//                }
+//                myAdapter.notifyDataSetChanged();
+//                for (int i = 0; i < pages.size(); i++) {
+//                    View one = pages.get(i);
+//                    TextView title = one.findViewById(R.id.previewTitle);
+//                    TextView content = one.findViewById(R.id.previewContent);
+//                    //修改字体大小
+//                    title.setTextSize(title.getTextSize()*mTextSize/3);
+//                    content.setTextSize(content.getTextSize()*mTextSize/3);
+//                }
+//                return false;
             }
         });
 
@@ -289,7 +329,15 @@ public class MainActivity extends AppCompatActivity
                 ImageView img = holder.getView(R.id.iv_icon);
                 TextView title = holder.getView(R.id.tv_item_title);
                 //Toast.makeText(MainActivity.this, String.valueOf(title.getTextSize()), Toast.LENGTH_SHORT).show();
-                title.setTextSize(title.getTextSize()*mTextSize/3);
+                //title.setTextSize(title.getTextSize()*mTextSize/3);
+                //修改字体大小
+                if(oldManModel == false) {
+                    title.setTextSize(18);
+                }
+                else {
+                    title.setTextSize(22);
+                }
+
                 TextView time = holder.getView(R.id.tv_item_date);
                 if(s.getTitle() != null){
                     title.setText(s.getTitle());
@@ -322,6 +370,12 @@ public class MainActivity extends AppCompatActivity
                 //view pager定位到当前item
                 view_pager.setCurrentItem(position);
             }
+
+            @Override
+            public void onLongClick(int position) {
+                // 处理长按事件
+
+            }
         });
         recyclerView = (RecyclerView)findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -336,7 +390,6 @@ public class MainActivity extends AppCompatActivity
                 myAdapter.clearAll();
                 myAdapter.notifyDataSetChanged();
                 MainActivityNetworkVisit.getInstance().getNewsAgain();
-
             }
         });
 
@@ -491,8 +544,19 @@ public class MainActivity extends AppCompatActivity
             TextView read = card_view.findViewById(R.id.readMore);
             TextView title = card_view.findViewById(R.id.previewTitle);
             TextView content = card_view.findViewById(R.id.previewContent);
-            title.setTextSize(title.getTextSize()*mTextSize/3);
-            content.setTextSize(content.getTextSize()*mTextSize/3);
+//            title.setTextSize(title.getTextSize()*mTextSize/3);
+//            content.setTextSize(content.getTextSize()*mTextSize/3);
+
+            //修改字体大小
+            if(oldManModel == false) {
+                title.setTextSize(20);
+                content.setTextSize(16);
+            }
+            else {
+                title.setTextSize(25);
+                content.setTextSize(20);
+            }
+
             ImageView img = card_view.findViewById(R.id.iv_icon);
             content.setText(item.getSummary());
             title.setText(item.getTitle());
@@ -508,6 +572,7 @@ public class MainActivity extends AppCompatActivity
 //                    bundle.putString("pubDate");
                     bundle.putString("digest", item.getSummary());
                     bundle.putFloat("size", mTextSize);
+                    bundle.putBoolean("oldManModel", oldManModel);
                     Intent intent = new Intent(MainActivity.this, NewsDetail.class);
                     intent.putExtra("message",bundle);
                     startActivity(intent);
@@ -540,8 +605,8 @@ public class MainActivity extends AppCompatActivity
                     for(Element element : p){
                         currentSummary += element.text();
                     }
-                    if(currentSummary.length() > 70){
-                        currentSummary = currentSummary.substring(0, 70);
+                    if(currentSummary.length() > 60){
+                        currentSummary = currentSummary.substring(0, 60);
                         currentSummary += "...";
                     }
                     e.setSummary(currentSummary);
