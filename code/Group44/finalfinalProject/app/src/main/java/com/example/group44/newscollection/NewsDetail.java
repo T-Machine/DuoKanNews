@@ -338,7 +338,7 @@ public class NewsDetail extends AppCompatActivity {
                     @Override
                     public void onNext(final DetailItem value) {
                         // update UI here
-                        Log.d(TAG, "onNext: " + value.getText());
+//                        Log.d(TAG, "onNext: " + value.getText());
 
                         if(value.getImgURLNum() > 1) {
                             ImageView imgView = findViewById(R.id.newsImage);
@@ -418,11 +418,11 @@ public class NewsDetail extends AppCompatActivity {
 
                                     WordFrequency wf = new WordFrequency(e.getWord(), e.getFrequency());
                                     if(mDatasource.getFrequency(e.getWord()) == null) {
-                                        Log.d(TAG, "run: insert new word into word_frequency table");
+                                        Log.d(TAG, "run: insert new word into word_frequency table: " + e.getWord());
                                         mDatasource.insertNewWord(e.getWord());
                                     }
                                     mDatasource.updateFrequency(wf);
-                                    Log.d(TAG, "run: frequency related " + e.getWord() + mDatasource.getFrequency(e.getWord()));
+                                    Log.d(TAG, "run: frequency related word:" + e.getWord() +"frequency:" + mDatasource.getFrequency(e.getWord()));
                                 }
                             }
                         }.start();

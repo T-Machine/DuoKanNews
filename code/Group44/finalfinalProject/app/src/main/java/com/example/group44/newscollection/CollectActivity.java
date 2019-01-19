@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -33,6 +34,7 @@ public class CollectActivity extends AppCompatActivity {
     ImageView hidden_card;
     ViewPager view_pager;
 
+    private static String TAG = "COLLECT_ACTIVITY";
     private AppRepository mDatasource;
 
 
@@ -115,7 +117,13 @@ public class CollectActivity extends AppCompatActivity {
             @Override
             public void onLongClick(int position) {
                 // 处理长按事件
-
+                String title = mNewsList.get(position).title;
+                // 删除数据库中的对象
+                mDatasource.deleteFavNews(title);
+                // 删除内存中的对象
+                mNewsList.remove(position);
+                myAdapter.notifyDataSetChanged();
+                Log.d(TAG, "onLongClick: delete favorite news " + title);
             }
         });
         recyclerView = (RecyclerView)findViewById(R.id.collectRecyclerView);

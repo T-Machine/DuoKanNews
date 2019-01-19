@@ -128,10 +128,11 @@ public class AppRepository {
 
     /**
      * 删除收藏的新闻
-     * @param news =》 要被删除的新闻
+     * @param title =》 要被删除的新闻
      */
-    public void deleteFavNews(FavoriteNews news) {
-        mAppDao.deleteFavNews(news);
+    public void deleteFavNews(String title) {
+        mAppDao.deleteFavNewsByTitle(title);
     }
+
 }
 

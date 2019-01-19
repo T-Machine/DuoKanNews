@@ -20,7 +20,7 @@ public class CommonDialog extends Dialog{
     private ArrayList<String> favWords = new ArrayList<>();
     private AppRepository mDatasource;
 
-    private static String TAG = "DIALOG_DEBUGGING";
+    private static String TAG = "DIALOG";
 
     public CommonDialog(Context context) {
         super(context);
@@ -49,22 +49,25 @@ public class CommonDialog extends Dialog{
             @Override
             public void onClick(View v) {
 
-                // check which check_box has been checked
+                // check which check_box has been checked, already test
                 if(tv1.isChecked()) {
+                    Log.d(TAG, "onClick: delete word" + favWords.get(0));
+                    mDatasource.deleteWFPair(favWords.get(0));
+                }
+
+                if(tv2.isChecked()) {
                     Log.d(TAG, "onClick: delete word" + favWords.get(1));
                     mDatasource.deleteWFPair(favWords.get(1));
                 }
 
-                if(tv2.isChecked()) {
+                if(tv3.isChecked()) {
+                    Log.d(TAG, "onClick: delete word" + favWords.get(2));
                     mDatasource.deleteWFPair(favWords.get(2));
                 }
 
-                if(tv3.isChecked()) {
-                    mDatasource.deleteWFPair(favWords.get(3));
-                }
-
                 if(tv4.isChecked()) {
-                    mDatasource.deleteWFPair(favWords.get(4));
+                    Log.d(TAG, "onClick: delete word" + favWords.get(3));
+                    mDatasource.deleteWFPair(favWords.get(3));
                 }
 
                 dismiss();
