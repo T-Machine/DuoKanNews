@@ -1,5 +1,6 @@
 package com.example.group44.newscollection;
 
+import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -7,6 +8,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,11 +17,13 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -167,6 +172,26 @@ public class NewsDetail extends AppCompatActivity {
         src.setText(bundle.getString("source"));
         mBitmapUtils = new BitmapUtils(this);
 
+        // 判断网络状态-------
+        ConnectivityManager connectivityManager = (ConnectivityManager) this.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo info = connectivityManager.getActiveNetworkInfo();
+        if(info == null || !info.isConnected()) {
+            final Dialog dialog = new Dialog(this);
+            View contentView = LayoutInflater.from(this).inflate(
+                    R.layout.dialog_recommend, null);
+            dialog.setContentView(contentView);
+            dialog.setCanceledOnTouchOutside(true);
+            Button OK = contentView.findViewById(R.id.OkButton);
+            OK.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
+                }
+            });
+            dialog.show();
+        }
+        //------------------
+
         // RXJava获得内容
         Observable.create(new ObservableOnSubscribe<DetailItem>() {
             @Override
@@ -178,6 +203,10 @@ public class NewsDetail extends AppCompatActivity {
 
                 // 判断是否存在视频并增加跳转
                 Elements videoElements = body.select(".art_video");
+                Elements videoElements2 = body.select(".aplayer");
+                if(videoElements.size() == 0 && videoElements2.size() != 0){
+                    videoElements = videoElements2;
+                }
                 if(videoElements.size() != 0){
                     Log.i("figure.art_video",url);
                     handler.post(new Runnable() {
@@ -236,7 +265,12 @@ public class NewsDetail extends AppCompatActivity {
 
                 StringBuilder buf = new StringBuilder();
                 for(Element e : p) {
-                    String s = e.text();
+                    String s = "      ";
+                    s += e.text();
+                    if(s.indexOf('\n') == -1) {
+                        s += '\n';
+                        s += '\n';
+                    }
                     // 去除干扰
                     if(s.indexOf("图为") != -1) continue;
                     buf.append(s);
@@ -256,9 +290,9 @@ public class NewsDetail extends AppCompatActivity {
                         Log.d(TAG, "subscribe: " + url);
                     }
                 }
-                if(p != null) {
-                    res.setText(p.text());
-                }
+//                if(p != null) {
+//                    res.setText(p.text());          /////加两次?
+//                }
                 res.setTitle(doc.title());
                 Log.d(TAG, "subscribe: setup done");
                 emitter.onNext(res);
@@ -287,30 +321,30 @@ public class NewsDetail extends AppCompatActivity {
                             Log.d(TAG, "onNext: No imgs here");
                         }
 
-                        String origin = value.getText();
-                        // 分句
-                        ArrayList<String> subSentances = new ArrayList<>();
-                        while(origin.indexOf("。") != -1){
-                            subSentances.add(origin.substring(0, origin.indexOf("。") + 1));
-                            origin = origin.substring(origin.indexOf("。") + 1);
-                        }
-
-                        // 分段
-                        String complete = "        ";
-                        if(subSentances.size() > 14){
-                            Integer subParagraph = subSentances.size() / 7;
-                            for(int i = 0; i < subSentances.size(); ++i){
-                                complete += subSentances.get(i);
-                                if(i % subParagraph == 0 && i != 0){
-                                    complete += "\n\n       ";
-                                }
-                            }
-                        }else{
-                            for(String e : subSentances){
-                                complete += e;
-                            }
-                        }
-                        mContentText.setText(complete);
+//                        String origin = value.getText();
+//                        // 分句
+//                        ArrayList<String> subSentances = new ArrayList<>();
+//                        while(origin.indexOf("。") != -1){
+//                            subSentances.add(origin.substring(0, origin.indexOf("。") + 1));
+//                            origin = origin.substring(origin.indexOf("。") + 1);
+//                        }
+//
+//                        // 分段
+//                        String complete = "        ";
+//                        if(subSentances.size() > 14){
+//                            Integer subParagraph = subSentances.size() / 7;
+//                            for(int i = 0; i < subSentances.size(); ++i){
+//                                complete += subSentances.get(i);
+//                                if(i % subParagraph == 0 && i != 0){
+//                                    complete += "\n\n       ";
+//                                }
+//                            }
+//                        }else{
+//                            for(String e : subSentances){
+//                                complete += e;
+//                            }
+//                        }
+                        mContentText.setText(value.getText());
                         String title = value.getTitle();
                         if(title.indexOf("_手机新浪网") != -1){
                             title = title.substring(0,title.indexOf("_手机新浪网"));

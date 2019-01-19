@@ -1,9 +1,13 @@
 package com.example.group44.newscollection;
 
+import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,9 +33,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.group44.newscollection.JSON.Feed;
 import com.example.group44.newscollection.JSON.JsonRootBean;
@@ -105,6 +111,26 @@ public class MainActivity extends AppCompatActivity
         findViewById(R.id.drawer_layout).setVisibility(View.INVISIBLE);
         //------------------
 
+        // 判断网络状态-------
+        ConnectivityManager connectivityManager = (ConnectivityManager) this.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo info = connectivityManager.getActiveNetworkInfo();
+        if(info == null || !info.isConnected()) {
+            final Dialog dialog = new Dialog(this);
+            View contentView = LayoutInflater.from(this).inflate(
+                    R.layout.dialog_recommend, null);
+            dialog.setContentView(contentView);
+            dialog.setCanceledOnTouchOutside(true);
+            Button OK = contentView.findViewById(R.id.OkButton);
+            OK.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
+                }
+            });
+            dialog.show();
+        }
+        //------------------
+
         // 获得用户名
         SharedPreferences shared=getSharedPreferences("Username", MODE_PRIVATE);
         //侧滑 功能
@@ -114,6 +140,52 @@ public class MainActivity extends AppCompatActivity
         View v = navigationView.getHeaderView(0);
         TextView tvu = v.findViewById(R.id.gotUsername);
         ImageView iv = v.findViewById(R.id.hostImg);
+        final Menu view = navigationView.getMenu();
+
+        view.getItem(0).setCheckable(false);
+        view.getItem(1).setCheckable(false);
+        view.getItem(2).setCheckable(false);
+        view.getItem(3).setCheckable(false);
+        //set the menu listener
+        view.getItem(0).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Toast.makeText(MainActivity.this, "test", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        });
+
+        view.getItem(1).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                //view.getItem(0).setChecked(true);
+                //view.getItem(1).setChecked(false);
+                Intent intent1 = new Intent(MainActivity.this, CollectActivity.class);
+                startActivity(intent1);
+                //view.getItem(0).setChecked(true);
+                //view.getItem(1).setChecked(false);
+                return false;
+            }
+        });
+
+        view.getItem(2).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Toast.makeText(MainActivity.this, "test", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        });
+
+        view.getItem(3).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Toast.makeText(MainActivity.this, "test", Toast.LENGTH_SHORT).show();
+                //调整字体大小
+                return false;
+            }
+        });
+
+
         iv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
