@@ -249,7 +249,7 @@ public class MainActivity extends AppCompatActivity
                     }
                     else {
                         title.setTextSize(25);
-                        content.setTextSize(21);
+                        content.setTextSize(20);
                     }
                 }
                 myAdapter.notifyDataSetChanged();
@@ -528,7 +528,7 @@ public class MainActivity extends AppCompatActivity
             }
             else {
                 title.setTextSize(25);
-                content.setTextSize(21);
+                content.setTextSize(20);
             }
 
             ImageView img = card_view.findViewById(R.id.iv_icon);
@@ -546,6 +546,7 @@ public class MainActivity extends AppCompatActivity
 //                    bundle.putString("pubDate");
                     bundle.putString("digest", item.getSummary());
                     bundle.putFloat("size", mTextSize);
+                    bundle.putBoolean("oldManModel", oldManModel);
                     Intent intent = new Intent(MainActivity.this, NewsDetail.class);
                     intent.putExtra("message",bundle);
                     startActivity(intent);
@@ -578,8 +579,8 @@ public class MainActivity extends AppCompatActivity
                     for(Element element : p){
                         currentSummary += element.text();
                     }
-                    if(currentSummary.length() > 70){
-                        currentSummary = currentSummary.substring(0, 70);
+                    if(currentSummary.length() > 60){
+                        currentSummary = currentSummary.substring(0, 60);
                         currentSummary += "...";
                     }
                     e.setSummary(currentSummary);
