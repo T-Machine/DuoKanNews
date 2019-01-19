@@ -353,7 +353,7 @@ public class MainActivityNetworkVisit {
                    Log.i("sss", e.getTitle());
                }
                HandlerManager.getInstance().sendSuccessMessage();
-               if(refreshCount >= 3){
+               if(refreshCount >= 5){
                    bigList.clear();
                    finishAll = false;
                    bigListNum = 0;
