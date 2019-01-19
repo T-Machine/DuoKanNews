@@ -27,14 +27,25 @@
 
     <TextView
         android:id="@+id/gotUsername"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="@id/hostImg"
-        android:paddingTop="5dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:paddingTop="9dp"
         android:text="@string/nav_header_title"
         android:layout_marginLeft="25dp"
         android:textSize="20sp"
         android:textColor="#000000"/>
+    <ImageView
+        android:id="@+id/editBtn"
+        android:padding="8dp"
+        android:layout_height="40dp"
+        android:layout_width="40dp"
+        android:scaleType="fitXY"
+        app:layout_constraintLeft_toRightOf="@+id/gotUsername"
+        app:layout_constraintTop_toTopOf="@id/gotUsername"
+        android:layout_marginLeft="20dp"
+        android:src="@drawable/edit"
+        />
 
 </android.support.constraint.ConstraintLayout>

@@ -46,6 +46,7 @@ public class MainActivityNetworkVisit {
 
     private AppRepository mDatasource;
     // 存放推荐新闻结果
+    private ArrayList<Feed> bigList = new ArrayList<>();
     private List<Feed> list1 = new ArrayList<>();
     private List<Feed> list2 = new ArrayList<>();
     private ArrayList<Feed> feedList = new ArrayList<>();
@@ -73,6 +74,8 @@ public class MainActivityNetworkVisit {
 
     // 加锁
     private volatile Lock resultLock = new ReentrantLock();
+    private volatile Lock bigListLock = new ReentrantLock();
+    private Integer bigListNum = 0;
     public static MainActivityNetworkVisit getInstance(){
         if(instance == null){
             instance = new MainActivityNetworkVisit();
@@ -81,8 +84,9 @@ public class MainActivityNetworkVisit {
     }
     private boolean isFinish = false;
     private int result = 0;
+    private boolean finishAll = false;
     public void setUrl(String type){
-
+        // 根据之前的选择设定url
         String[] key = null;
         key = type.split(",");
         for(String e : key){
@@ -119,11 +123,15 @@ public class MainActivityNetworkVisit {
                 continue;
             }
         }
-
+        setOfUrls.add(recommand);
         getNews();
     }
 
     public void getNews(){
+        list1.clear();
+        list2.clear();
+        feedList.clear();
+        // 定时器
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -131,7 +139,7 @@ public class MainActivityNetworkVisit {
                     @Override
                     public void run() {
                         try{
-                            sleep(10000);
+                            sleep(15000);
                         }catch (InterruptedException e){
                             e.printStackTrace();
                         }
@@ -141,13 +149,22 @@ public class MainActivityNetworkVisit {
                     }
                 }).start();
                 final ArrayList<String> tmpUrls = new ArrayList<>();
-                if(setOfUrls.size() > 1){
+                if(setOfUrls.size() > 2){
                     // 从里面随机获取1类
-                    Integer r = (int)(Math.random() * setOfUrls.size());
-                    Log.i("select type",r.toString() + " " + r.toString());
-                    tmpUrls.add(setOfUrls.get(r));
+                    Integer r1 = (int)(Math.random() * setOfUrls.size());
+                    Integer r2 = (int)(Math.random() * setOfUrls.size());
+                    while(r2 == r1){
+                        r2 = (int)(Math.random() * setOfUrls.size());
+                    }
+                    Log.i("select type",r1.toString() + " " + r2.toString());
+                    tmpUrls.add(setOfUrls.get(r1));
+                    tmpUrls.add(setOfUrls.get(r2));
+                } else {
+                    for (String u : setOfUrls){
+                        tmpUrls.add(u);
+                    }
                 }
-                tmpUrls.add(recommand);
+
 
                 for(String url : tmpUrls){
                     OkHttpClient okHttpClient = new OkHttpClient();
@@ -181,7 +198,7 @@ public class MainActivityNetworkVisit {
                                 }
                                 // todo:分词处理
                                 // 不能太多相关新闻
-                                if(feedList.size() < 2){
+                                if(feedList.size() < 1){
                                     int size = pos == 1 ? list1.size() : list2.size();
                                     for(int i = 0; i < size; ++ i ){
                                         Feed f = pos == 1 ? list1.get(i) : list2.get(i);
@@ -202,12 +219,12 @@ public class MainActivityNetworkVisit {
                                             if(!DetectWords.inValid(str)) continue;
                                             if(mDatasource.getFrequency(str) != null) {
                                                 Log.d("JIEBA", "fetch" + str);
-                                                if(feedList.size() < 2)
+                                                if(feedList.size() < 1)
                                                     feedList.add(f);
                                                 break;
                                             }
                                         }
-                                        if(feedList.size() >= 2) break;
+                                        if(feedList.size() >= 1) break;
                                     }
                                 }
                                 if(result < tmpUrls.size() - 1){
@@ -219,6 +236,7 @@ public class MainActivityNetworkVisit {
                                         Integer randomIndex1 = rand.nextInt(2);
                                         boolean isValid = true;
                                         if(randomIndex1 == 0){
+                                            if (list1.size() == 0) continue;
                                             Integer randomIndex2 = rand.nextInt(list1.size());
                                             Feed item = list1.get(randomIndex2);
                                             if(item.getTitle().equals("")) continue;
@@ -232,6 +250,7 @@ public class MainActivityNetworkVisit {
                                                 feedList.add(item);
                                             }
                                         } else if(randomIndex1 == 1){
+                                            if (list2.size() == 0) continue;
                                             Integer randomIndex2 = rand.nextInt(list2.size());
                                             Feed item = list2.get(randomIndex2);
                                             if(item.getTitle().equals("")) continue;
@@ -256,6 +275,120 @@ public class MainActivityNetworkVisit {
                 }
             }
         }).start();
+    }
+
+    // 获取尽可能多的数据
+    public void getMost(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for(String url : setOfUrls){
+                    OkHttpClient okHttpClient = new OkHttpClient();
+                    final Request request = new Request.Builder()
+                            .url(url)
+                            .get()//默认就是GET请求，可以不写
+                            .build();
+                    Call call = okHttpClient.newCall(request);
+                    call.enqueue(new Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            Log.e("OKHTTP", "No Internet");
+                            return;
+                        }
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            Log.i("onresponse","getREsult");
+                            if (response.isSuccessful()) {
+                                Gson gson = new Gson();//创建Gson对象
+                                JsonRootBean bean = gson.fromJson(response.body().string(), JsonRootBean.class);//解析
+                                bigListLock.lock();
+                                bigList.addAll(bean.getData().getFeed());
+                                Integer t= bean.getData().getFeed().size();
+                                Log.i("Steal traffic", t.toString());
+                                bigListNum++;
+                                if(bigListNum == setOfUrls.size() - 1){
+                                    finishAll = true;
+                                }
+                                bigListLock.unlock();
+                            }
+                        }
+                    });
+                }
+            }
+        }).start();
+    }
+
+    // 刷新数据
+    public void getNewsAgain(){
+       new Thread(new Runnable() {
+           @Override
+           public void run() {
+               feedList.clear();
+               // 获取本地数据
+               if(finishAll){
+                   getFromExistedList(bigList);
+               }else{
+                   List<Feed> ls = new ArrayList<>();
+                   ls.addAll(list1);
+                   ls.addAll(list2);
+                   getFromExistedList(ls);
+               }
+               HandlerManager.getInstance().sendSuccessMessage();
+           }
+       }).start();
+
+
+    }
+
+    private void getFromExistedList(List<Feed> ls){
+        for(int i = 0; i < 5; i++){
+            if(i < 1){
+                // 词频
+                for(Feed e : ls){
+                    if(e.getTitle().equals("")) continue;
+                    String origin = e.getTitle() + e.getLongTitle();
+                    ArrayList<String> wordList = JiebaSegmenter.getJiebaSegmenterSingleton().getDividedString(origin);
+
+                    // 是否出现过
+                    boolean isExisted = false;
+                    for(Feed tmp : feedList){
+                        if(tmp.getTitle().equals(e.getTitle())){
+                            isExisted = true;
+                            break;
+                        }
+                    }
+                    if(isExisted) continue;
+                    for(String str : wordList){
+                        if(!DetectWords.inValid(str)) continue;
+                        if(mDatasource.getFrequency(str) != null) {
+                            Log.d("JIEBA", "fetch" + str);
+                            feedList.add(e);
+                            break;
+                        }
+                    }
+                }
+            } else{
+                boolean isValid = true;
+                Random rand = new Random();
+                Integer randomIndex = rand.nextInt(ls.size());
+                Feed item = ls.get(randomIndex);
+                if(item.getTitle().equals("")){
+                    i--;
+                    continue;
+                }
+                for(Feed e : feedList){
+                    if(e.getTitle().equals(item.getTitle())){
+                        isValid = false;
+                        break;
+                    }
+                }
+                if(isValid){
+                    feedList.add(item);
+                } else{
+                    i--;
+                }
+            }
+        }
     }
     public void setContext(Context context) {
         this.context = context;

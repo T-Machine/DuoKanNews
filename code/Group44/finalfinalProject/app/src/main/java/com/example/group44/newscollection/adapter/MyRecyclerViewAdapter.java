@@ -25,6 +25,9 @@ public abstract class MyRecyclerViewAdapter<T> extends RecyclerView.Adapter<MyVi
     public abstract void convert(MyViewHolder holder, T t);
     //声明抽象方法convert
 
+    public void clearAll(){
+        data.clear();
+    }
     public interface OnItemClickListener{
         void onClick(int position);
         //void onLongClick(int position);
