@@ -71,7 +71,7 @@ public class MainActivityNetworkVisit {
 
     // 加锁
     private volatile Lock resultLock = new ReentrantLock();
-
+    private volatile Lock resultListLock = new ReentrantLock();
     public static MainActivityNetworkVisit getInstance(){
         if(instance == null){
             instance = new MainActivityNetworkVisit();
@@ -170,6 +170,7 @@ public class MainActivityNetworkVisit {
                                 List<Feed> feed = bean.getData().getFeed();
                                 // todo:分词处理
                                 // 不能太多相关新闻
+                                resultListLock.lock();
                                 for(Feed f : feed){
                                     if(feedList.size() >= 2) break;
                                     if(f.getTitle().equals("")) continue;
@@ -234,6 +235,7 @@ public class MainActivityNetworkVisit {
                                             }
                                             // 存在去除
                                             if(isExisted){
+                                                listOfList.get(randomIndex1).remove(tmp);
                                                 continue;
                                             }
                                             feedList.add(tmp);
@@ -242,6 +244,7 @@ public class MainActivityNetworkVisit {
                                     HandlerManager.getInstance().sendSuccessMessage();
                                 }
                                 resultLock.unlock();
+                                resultListLock.unlock();
                             }
                         }
                     });
