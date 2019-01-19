@@ -1,5 +1,6 @@
 package com.example.group44.newscollection;
 
+import android.content.Intent;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -33,7 +34,7 @@ public class CollectActivity extends AppCompatActivity {
 
     private AppRepository mDatasource;
 
-
+    private float mTextsize;
     private ArrayList<FavoriteNews> mNewsList;
     private List<View> pages;
     // 加载框
@@ -49,7 +50,9 @@ public class CollectActivity extends AppCompatActivity {
         //ld.show();
         //findViewById(R.id.drawer_layout).setVisibility(View.INVISIBLE);
         //------------------
-
+        Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
+        mTextsize = bundle.getFloat("size");
 
         // setup database
         mDatasource = new AppRepository(this);
@@ -67,6 +70,7 @@ public class CollectActivity extends AppCompatActivity {
             public void convert(MyViewHolder holder, FavoriteNews s) {
                 ImageView img = holder.getView(R.id.iv_icon);
                 TextView title = holder.getView(R.id.tv_item_title);
+                title.setTextSize(title.getTextSize()*mTextsize/3);
                 TextView time = holder.getView(R.id.tv_item_date);
                 if(s.title != null){
                     title.setText(s.title);
