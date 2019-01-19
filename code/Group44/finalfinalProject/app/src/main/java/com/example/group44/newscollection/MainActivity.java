@@ -165,6 +165,13 @@ public class MainActivity extends AppCompatActivity
         //获取NavigationView上的组件
         View v = navigationView.getHeaderView(0);
         TextView tvu = v.findViewById(R.id.gotUsername);
+        ImageView editView = v.findViewById(R.id.editBtn);
+        editView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
         ImageView iv = v.findViewById(R.id.hostImg);
         final Menu view = navigationView.getMenu();
 
@@ -312,28 +319,11 @@ public class MainActivity extends AppCompatActivity
         mRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh(@NonNull RefreshLayout refreshLayout) {
-//                myAdapter.clearAll();
-//                feedList.clear();
-//                myAdapter.notifyDataSetChanged();
-//
-////                List<String>  data = initDatas();
-////                Message message = new Message();
-////                message.what = 1 ;
-////                message.obj = data ;
-////                mHandler.sendMessageDelayed(message,2000);
-//                // 异步操作
-//                refreshLayout.finishRefresh();
-//                MainActivityNetworkVisit.getInstance().getNews();
+
                 myAdapter.clearAll();
                 myAdapter.notifyDataSetChanged();
                 MainActivityNetworkVisit.getInstance().getNewsAgain();
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mRefreshLayout.finishRefresh();
 
-                    }
-                }, 2500);
             }
         });
 
@@ -544,6 +534,8 @@ public class MainActivity extends AppCompatActivity
                     emitter.onNext(e);
                 }
                 emitter.onComplete();
+                ld.dismiss();
+                mRefreshLayout.finishRefresh();
             }
             // 需要回调主线程
         }).subscribeOn(Schedulers.computation())
@@ -571,7 +563,6 @@ public class MainActivity extends AppCompatActivity
                     public void onComplete() {
                         Log.d(TAG, "Complete Sending Paragraph");
                         setViewPager();
-                        ld.dismiss();
                         findViewById(R.id.drawer_layout).setVisibility(View.VISIBLE);
                     }
                 });

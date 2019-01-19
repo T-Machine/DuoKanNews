@@ -86,7 +86,7 @@ public class MainActivityNetworkVisit {
     private int result = 0;
     private boolean finishAll = false;
     public void setUrl(String type){
-
+        // 根据之前的选择设定url
         String[] key = null;
         key = type.split(",");
         for(String e : key){
@@ -139,7 +139,7 @@ public class MainActivityNetworkVisit {
                     @Override
                     public void run() {
                         try{
-                            sleep(10000);
+                            sleep(15000);
                         }catch (InterruptedException e){
                             e.printStackTrace();
                         }
@@ -198,7 +198,7 @@ public class MainActivityNetworkVisit {
                                 }
                                 // todo:分词处理
                                 // 不能太多相关新闻
-                                if(feedList.size() < 2){
+                                if(feedList.size() < 1){
                                     int size = pos == 1 ? list1.size() : list2.size();
                                     for(int i = 0; i < size; ++ i ){
                                         Feed f = pos == 1 ? list1.get(i) : list2.get(i);
@@ -219,12 +219,12 @@ public class MainActivityNetworkVisit {
                                             if(!DetectWords.inValid(str)) continue;
                                             if(mDatasource.getFrequency(str) != null) {
                                                 Log.d("JIEBA", "fetch" + str);
-                                                if(feedList.size() < 2)
+                                                if(feedList.size() < 1)
                                                     feedList.add(f);
                                                 break;
                                             }
                                         }
-                                        if(feedList.size() >= 2) break;
+                                        if(feedList.size() >= 1) break;
                                     }
                                 }
                                 if(result < tmpUrls.size() - 1){
