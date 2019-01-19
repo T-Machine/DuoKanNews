@@ -135,6 +135,7 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public void onClick(View view) {
                         dialog.dismiss();
+                        finish();
                     }
                 });
                 dialog.show();
