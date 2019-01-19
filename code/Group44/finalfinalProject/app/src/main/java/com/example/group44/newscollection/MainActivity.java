@@ -308,7 +308,15 @@ public class MainActivity extends AppCompatActivity
                 ImageView img = holder.getView(R.id.iv_icon);
                 TextView title = holder.getView(R.id.tv_item_title);
                 //Toast.makeText(MainActivity.this, String.valueOf(title.getTextSize()), Toast.LENGTH_SHORT).show();
-                title.setTextSize(title.getTextSize()*mTextSize/3);
+                //title.setTextSize(title.getTextSize()*mTextSize/3);
+                //修改字体大小
+                if(oldManModel == false) {
+                    title.setTextSize(18);
+                }
+                else {
+                    title.setTextSize(22);
+                }
+
                 TextView time = holder.getView(R.id.tv_item_date);
                 if(s.getTitle() != null){
                     title.setText(s.getTitle());
