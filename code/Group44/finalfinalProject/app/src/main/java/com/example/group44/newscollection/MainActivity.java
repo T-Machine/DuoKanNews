@@ -140,8 +140,12 @@ public class MainActivity extends AppCompatActivity
         View v = navigationView.getHeaderView(0);
         TextView tvu = v.findViewById(R.id.gotUsername);
         ImageView iv = v.findViewById(R.id.hostImg);
-        Menu view = navigationView.getMenu();
+        final Menu view = navigationView.getMenu();
 
+        view.getItem(0).setCheckable(false);
+        view.getItem(1).setCheckable(false);
+        view.getItem(2).setCheckable(false);
+        view.getItem(3).setCheckable(false);
         //set the menu listener
         view.getItem(0).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
@@ -154,13 +158,17 @@ public class MainActivity extends AppCompatActivity
         view.getItem(1).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
+                //view.getItem(0).setChecked(true);
+                //view.getItem(1).setChecked(false);
                 Intent intent1 = new Intent(MainActivity.this, CollectActivity.class);
                 startActivity(intent1);
+                //view.getItem(0).setChecked(true);
+                //view.getItem(1).setChecked(false);
                 return false;
             }
         });
 
-        view.getItem(0).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+        view.getItem(2).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 Toast.makeText(MainActivity.this, "test", Toast.LENGTH_SHORT).show();
@@ -168,7 +176,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        view.getItem(0).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+        view.getItem(3).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 Toast.makeText(MainActivity.this, "test", Toast.LENGTH_SHORT).show();
