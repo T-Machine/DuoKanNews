@@ -164,7 +164,10 @@ public class NewsDetail extends AppCompatActivity {
                 StringBuilder buf = new StringBuilder();
                 for(Element e : p) {
                     String s = e.text();
-                    s += '\n';
+//                    if(s.indexOf('\n') == -1) {
+//                        s += '\n';
+//                        s += '\n';
+//                    }
                     buf.append(s);
                 }
                 res.setText(buf.toString());
@@ -182,9 +185,9 @@ public class NewsDetail extends AppCompatActivity {
                         Log.d(TAG, "subscribe: " + url);
                     }
                 }
-                if(p != null) {
-                    res.setText(p.text());
-                }
+//                if(p != null) {
+//                    res.setText(p.text());          /////加两次?
+//                }
                 res.setTitle(doc.title());
                 Log.d(TAG, "subscribe: setup done");
                 emitter.onNext(res);
