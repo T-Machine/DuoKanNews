@@ -81,7 +81,8 @@ public class FullscreenActivity extends AppCompatActivity {
      * system UI. This is to prevent the jarring behavior of controls going away
      * while interacting with activity UI.
      */
-
+    private boolean isUserClick = false;
+    private boolean isCollectClick = false;
     private FrameLayout view;
     // 当前图片
     Integer currentImg = 0;
@@ -228,6 +229,11 @@ public class FullscreenActivity extends AppCompatActivity {
         userOkbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!isUserClick){
+                    isUserClick = true;
+                } else{
+                    return;
+                }
                 // 成功设置用户名
                 currentImg = 2;
                 // 缓存用户名
@@ -325,7 +331,11 @@ public class FullscreenActivity extends AppCompatActivity {
         choiceOkbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // 成功设置用户名
+                if(!isCollectClick){
+                    isCollectClick = true;
+                } else{
+                    return;
+                }
                 currentImg = 2;
                 // 交替显示
                 final ConstraintLayout choiceSet = findViewById(R.id.choiceSet);

@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.group44.newscollection.persistence.AppRepository;
 
@@ -48,7 +49,7 @@ public class CommonDialog extends Dialog{
         dislikeOkbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Toast.makeText(mContext, "不喜欢我了!", Toast.LENGTH_SHORT).show();
                 // check which check_box has been checked, already test
                 if(tv1.isChecked()) {
                     Log.d(TAG, "onClick: delete word" + favWords.get(0));
