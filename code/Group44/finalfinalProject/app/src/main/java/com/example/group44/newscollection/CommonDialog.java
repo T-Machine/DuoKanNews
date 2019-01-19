@@ -4,10 +4,13 @@ package com.example.group44.newscollection;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
+
+import com.example.group44.newscollection.persistence.AppRepository;
 
 import java.util.ArrayList;
 
@@ -15,9 +18,14 @@ public class CommonDialog extends Dialog{
 
     private Context mContext;
     private ArrayList<String> favWords = new ArrayList<>();
+    private AppRepository mDatasource;
+
+    private static String TAG = "DIALOG_DEBUGGING";
+
     public CommonDialog(Context context) {
         super(context);
         this.mContext = context;
+        mDatasource = new AppRepository(context);
     }
 
     CheckBox tv1, tv2, tv3, tv4;
@@ -40,6 +48,25 @@ public class CommonDialog extends Dialog{
         dislikeOkbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                // check which check_box has been checked
+                if(tv1.isChecked()) {
+                    Log.d(TAG, "onClick: delete word" + favWords.get(1));
+                    mDatasource.deleteWFPair(favWords.get(1));
+                }
+
+                if(tv2.isChecked()) {
+                    mDatasource.deleteWFPair(favWords.get(2));
+                }
+
+                if(tv3.isChecked()) {
+                    mDatasource.deleteWFPair(favWords.get(3));
+                }
+
+                if(tv4.isChecked()) {
+                    mDatasource.deleteWFPair(favWords.get(4));
+                }
+
                 dismiss();
             }
         });

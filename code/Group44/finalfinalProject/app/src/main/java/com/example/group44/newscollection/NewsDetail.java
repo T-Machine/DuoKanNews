@@ -196,7 +196,6 @@ public class NewsDetail extends AppCompatActivity {
         Log.d(TAG, "onCreate: url => " + url);
         TextView src = findViewById(R.id.source);
         src.setText(bundle.getString("source"));
-        //src.setTextSize(src.getTextSize()*2);
         mBitmapUtils = new BitmapUtils(this);
 
 
@@ -544,12 +543,10 @@ public class NewsDetail extends AppCompatActivity {
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             intent.setComponent(cmp);
                             startActivity(intent);
-
                         } catch (ActivityNotFoundException e) {
                             // TODO: handle exception
                             Toast toast = Toast.makeText(NewsDetail.this, "没有安装微信，不进行跳转",Toast.LENGTH_LONG);
                             toast.show();
-
                         }
                     }
 
