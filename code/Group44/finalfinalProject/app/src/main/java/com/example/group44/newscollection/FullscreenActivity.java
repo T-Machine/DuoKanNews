@@ -4,8 +4,11 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,6 +22,7 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -225,7 +229,7 @@ public class FullscreenActivity extends AppCompatActivity {
                 // 成功设置用户名
                 currentImg = 2;
                 // 缓存用户名
-                SharedPreferences shared=getSharedPreferences("Username", MODE_PRIVATE);
+                SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(FullscreenActivity.this);
                 SharedPreferences.Editor editor=shared.edit();
                 //第一次进入跳转
                 editor.putString("user", editText.getText().toString());
@@ -384,9 +388,57 @@ public class FullscreenActivity extends AppCompatActivity {
 
                     @Override
                     public void onAnimationEnd(Animation animation) {
+
+                        // 类型选择
+                        String type = "";
+                        CheckBox cb1 = findViewById(R.id.insideCountury);
+                        CheckBox cb2 = findViewById(R.id.outsideCountury);
+                        CheckBox cb3 = findViewById(R.id.life);
+                        CheckBox cb4 = findViewById(R.id.army);
+                        CheckBox cb5 = findViewById(R.id.sports);
+                        CheckBox cb6 = findViewById(R.id.entertain);
+                        CheckBox cb7 = findViewById(R.id.tech);
+                        CheckBox cb8 = findViewById(R.id.finance);
+                        if(cb1.isChecked()){
+                            type+="1,";
+                        }
+                        if(cb2.isChecked()){
+                            type+="2,";
+                        }
+                        if(cb3.isChecked()){
+                            type+="3,";
+                        }
+                        if(cb4.isChecked()){
+                            type+="4,";
+                        }
+                        if(cb5.isChecked()){
+                            type+="5,";
+                        }
+                        if(cb6.isChecked()){
+                            type+="6,";
+                        }
+                        if(cb7.isChecked()){
+                            type+="7,";
+                        }
+                        if(cb8.isChecked()){
+                            type+="8,";
+                        }
+
                         successSet.setVisibility(View.GONE);
+                        SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(FullscreenActivity.this);
+                        SharedPreferences.Editor editor=shared.edit();
+                        //第一次进入跳转
+                        editor.putString("collection", type);
+                        editor.commit();
+                        Log.i("select types", type);
+
                         // 跳转
                         Intent intent =new Intent(FullscreenActivity.this,MainActivity.class);
+
+                        // 更改第一次状态
+                        SharedPreferences.Editor firstEditor = shared.edit();
+                        firstEditor.putBoolean("isFirst", false);
+                        firstEditor.commit();
                         startActivity(intent);
                         finish();
                     }
@@ -434,6 +486,11 @@ public class FullscreenActivity extends AppCompatActivity {
     private void delayedHide(int delayMillis) {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
+    }
+
+    @Override
+    public void onBackPressed() {
+
     }
 
 }

@@ -19,7 +19,9 @@ public abstract class MyRecyclerViewAdapter<T> extends RecyclerView.Adapter<MyVi
         layoutId = _layoutId;
         data = _data;
     }
-
+    public int size(){
+        return data.size();
+    }
     public abstract void convert(MyViewHolder holder, T t);
     //声明抽象方法convert
 

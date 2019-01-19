@@ -191,13 +191,13 @@
                     <CheckBox
                         app:layout_constraintTop_toBottomOf="@id/insideCountury"
                         app:layout_constraintLeft_toLeftOf="@id/insideCountury"
-                        android:id="@+id/politics"
+                        android:id="@+id/life"
                         android:layout_marginTop="15dp"
                         android:button="@drawable/checkbox"
                         android:layout_width="wrap_content"
                         android:textSize="20sp"
                         android:layout_height="wrap_content"
-                        android:text="政务" />
+                        android:text="生活" />
                     <CheckBox
                         app:layout_constraintTop_toBottomOf="@id/outsideCountury"
                         app:layout_constraintLeft_toLeftOf="@id/outsideCountury"
@@ -209,8 +209,8 @@
                         android:layout_height="wrap_content"
                         android:text="军事" />
                     <CheckBox
-                        app:layout_constraintTop_toBottomOf="@id/politics"
-                        app:layout_constraintLeft_toLeftOf="@id/politics"
+                        app:layout_constraintTop_toBottomOf="@id/life"
+                        app:layout_constraintLeft_toLeftOf="@id/life"
                         android:id="@+id/sports"
                         android:button="@drawable/checkbox"
                         android:layout_marginTop="15dp"

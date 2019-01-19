@@ -14,7 +14,7 @@ public class Feed {
 
     private int pos;
     private String newsId;
-    private String title;
+    private String title = "";
     private String longTitle;
     private String source = "";
     private String link;
