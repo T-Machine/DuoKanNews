@@ -337,33 +337,33 @@ public class NewsDetail extends AppCompatActivity {
                             // 排序
                             class SortByFrequency implements Comparator {
                                 public int compare(Object o1, Object o2) {
-                                    String_val s1 = (String_val) o1;
-                                    String_val s2 = (String_val) o2;
-                                    if (s1.getVal() < s2.getVal())
+                                    WordFrequency s1 = (WordFrequency) o1;
+                                    WordFrequency s2 = (WordFrequency) o2;
+                                    if (s1.getFrequency() < s2.getFrequency())
                                         return 1;
-                                    else if(s1.getVal() == s2.getVal()) return 0;
+                                    else if(s1.getFrequency() == s2.getFrequency()) return 0;
                                     return -1;
                                 }
                             }
 
                             @Override
                             public void run(){
-                                ArrayList<String_val> local_str_val = new ArrayList<>();
+                                ArrayList<WordFrequency> local_str_val = new ArrayList<>();
                                 ArrayList<String> wordList = JiebaSegmenter.getJiebaSegmenterSingleton().getDividedString(analizedString);
                                 for(String str : wordList){
                                     if(str.length() <= 2) continue;
                                     // 筛选
                                     if(!DetectWords.inValid(str)) continue;
                                     boolean flag = false;
-                                    for(String_val e : local_str_val){
-                                        if(e.getChara().equals(str)){
+                                    for(WordFrequency e : local_str_val){
+                                        if(e.getWord().equals(str)){
                                             local_str_val.get(local_str_val.indexOf(e)).add();
                                             flag = true;
                                             break;
                                         }
                                     }
                                     if(!flag){
-                                        String_val tmp = new String_val(str, 1);
+                                        WordFrequency tmp = new WordFrequency(str, 1);
                                         local_str_val.add(tmp);
                                     }
                                 }
@@ -374,10 +374,18 @@ public class NewsDetail extends AppCompatActivity {
                                 // 排序
                                 Collections.sort(local_str_val, new SortByFrequency());
                                 for(int i = 0; i < local_str_val.size() && i < 4; i++){
-                                    String_val e = local_str_val.get(i);
-                                    favWords.add(e.getChara());
-                                    Log.i("analyze", e.getChara() + " " + e.getVal().toString());
-                                    // todo:永久化保存数据。如果存在数据则加上对应的val值，如果没有则进行保存。
+                                    WordFrequency e = local_str_val.get(i);
+                                    favWords.add(e.getWord());
+                                    Log.d("analyze", e.getWord() + " " + e.getFrequency().toString());
+                                    // todo:永久化保存数据。如果存在数据则加上对应的val值，如果没有则进行保存。=> done
+
+                                    WordFrequency wf = new WordFrequency(e.getWord(), e.getFrequency());
+                                    if(mDatasource.getFrequency(e.getWord()) == null) {
+                                        Log.d(TAG, "run: insert new word into word_frequency table");
+                                        mDatasource.insertNewWord(e.getWord());
+                                    }
+                                    mDatasource.updateFrequency(wf);
+                                    Log.d(TAG, "run: frequency related " + e.getWord() + mDatasource.getFrequency(e.getWord()));
                                 }
                             }
                         }.start();

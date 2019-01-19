@@ -35,8 +35,7 @@ public class AppRepository {
      * @param word
      * @return frequency
      */
-    public int getFrequency(String word) {
-
+    public Integer getFrequency(String word) {
         return mAppDao.getFrequency(word);
     }
 
@@ -74,7 +73,7 @@ public class AppRepository {
 
 
     /**
-     * 更新特定单词的频数
+     * 更新特定单词的频数, 需要先确保这个单词已经在表中，使用insert插入。
      * update frequency a specific word
      * @param newWf, a new instance of word-frequency pair
      */
