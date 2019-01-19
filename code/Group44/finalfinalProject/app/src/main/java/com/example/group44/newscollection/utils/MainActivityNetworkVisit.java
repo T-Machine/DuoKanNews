@@ -38,14 +38,16 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static java.lang.Thread.sleep;
 
 
 // 对多个URL进行判断，获取，返回类
 public class MainActivityNetworkVisit {
 
     private AppRepository mDatasource;
-    // 存放结果
-    private ArrayList< List<Feed> > listOfList = new ArrayList<>();
+    // 存放推荐新闻结果
+    private List<Feed> list1 = new ArrayList<>();
+    private List<Feed> list2 = new ArrayList<>();
     private ArrayList<Feed> feedList = new ArrayList<>();
     ArrayList<String> setOfUrls = new ArrayList<>();
     private static MainActivityNetworkVisit instance=null;
@@ -71,13 +73,13 @@ public class MainActivityNetworkVisit {
 
     // 加锁
     private volatile Lock resultLock = new ReentrantLock();
-    private volatile Lock resultListLock = new ReentrantLock();
     public static MainActivityNetworkVisit getInstance(){
         if(instance == null){
             instance = new MainActivityNetworkVisit();
         }
         return instance;
     }
+    private boolean isFinish = false;
     private int result = 0;
     public void setUrl(String type){
 
@@ -118,27 +120,6 @@ public class MainActivityNetworkVisit {
             }
         }
 
-        if(setOfUrls.size() > 3){
-            // 从里面随机获取三类
-            Integer r1 = (int)(Math.random() * setOfUrls.size());
-            Integer r2 = (int)(Math.random() * setOfUrls.size());
-            while(r2 == r1){
-                r2 = (int)(Math.random() * setOfUrls.size());
-            }
-            Integer r3 = (int)(Math.random() * setOfUrls.size());
-            while(r3 == r2 || r3 == r1){
-                r3 = (int)(Math.random() * setOfUrls.size());
-            }
-
-            Log.i("select type",r1.toString() + " " + r2.toString() + " " + r3.toString());
-            ArrayList<String> tmp = new ArrayList<>();
-            for(int i = 0; i < 3; i++){
-                tmp.add(setOfUrls.get(i));
-            }
-            setOfUrls = tmp;
-        }
-
-        setOfUrls.add(recommand);
         getNews();
     }
 
@@ -146,8 +127,29 @@ public class MainActivityNetworkVisit {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                for(String url : setOfUrls){
-                    // 获取json 同步请求
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try{
+                            sleep(10000);
+                        }catch (InterruptedException e){
+                            e.printStackTrace();
+                        }
+                        if(!isFinish){
+                            HandlerManager.getInstance().sendFailMessage();
+                        }
+                    }
+                }).start();
+                final ArrayList<String> tmpUrls = new ArrayList<>();
+                if(setOfUrls.size() > 1){
+                    // 从里面随机获取1类
+                    Integer r = (int)(Math.random() * setOfUrls.size());
+                    Log.i("select type",r.toString() + " " + r.toString());
+                    tmpUrls.add(setOfUrls.get(r));
+                }
+                tmpUrls.add(recommand);
+
+                for(String url : tmpUrls){
                     OkHttpClient okHttpClient = new OkHttpClient();
                     final Request request = new Request.Builder()
                             .url(url)
@@ -167,63 +169,87 @@ public class MainActivityNetworkVisit {
                             if (response.isSuccessful()) {
                                 Gson gson = new Gson();//创建Gson对象
                                 JsonRootBean bean = gson.fromJson(response.body().string(), JsonRootBean.class);//解析
-                                List<Feed> feed = bean.getData().getFeed();
+                                resultLock.lock();
+                                int pos;
+                                if(list1.isEmpty()) {
+                                    list1 = bean.getData().getFeed();
+                                    pos = 1;
+                                }
+                                else {
+                                    pos = 2;
+                                    list2 = bean.getData().getFeed();
+                                }
                                 // todo:分词处理
                                 // 不能太多相关新闻
-                                resultListLock.lock();
-                                for(Feed f : feed){
-                                    if(feedList.size() >= 2) break;
-                                    if(f.getTitle().equals("")) continue;
-                                    String origin = f.getTitle() + f.getLongTitle();
-                                    ArrayList<String> wordList = JiebaSegmenter.getJiebaSegmenterSingleton().getDividedString(origin);
+                                if(feedList.size() < 2){
+                                    int size = pos == 1 ? list1.size() : list2.size();
+                                    for(int i = 0; i < size; ++ i ){
+                                        Feed f = pos == 1 ? list1.get(i) : list2.get(i);
+                                        if(f.getTitle().equals("")) continue;
+                                        String origin = f.getTitle() + f.getLongTitle();
+                                        ArrayList<String> wordList = JiebaSegmenter.getJiebaSegmenterSingleton().getDividedString(origin);
 
-                                    // 是否出现过
-                                    boolean isExisted = false;
-                                    for(Feed tmp : feedList){
-                                        if(tmp.getTitle().equals(f.getTitle())){
-                                            isExisted = true;
-                                            break;
+                                        // 是否出现过
+                                        boolean isExisted = false;
+                                        for(Feed tmp : feedList){
+                                            if(tmp.getTitle().equals(f.getTitle())){
+                                                isExisted = true;
+                                                break;
+                                            }
                                         }
-                                    }
-                                    if(isExisted) continue;
-                                    for(String str : wordList){
-                                        if(!DetectWords.inValid(str)) continue;
-                                        if(mDatasource.getFrequency(str) != null) {
-                                            Log.d("JIEBA", "fetch" + str);
-                                            if(feedList.size() >= 2)
-                                                feedList.add(f);
-                                            break;
+                                        if(isExisted) continue;
+                                        for(String str : wordList){
+                                            if(!DetectWords.inValid(str)) continue;
+                                            if(mDatasource.getFrequency(str) != null) {
+                                                Log.d("JIEBA", "fetch" + str);
+                                                if(feedList.size() < 2)
+                                                    feedList.add(f);
+                                                break;
+                                            }
                                         }
+                                        if(feedList.size() >= 2) break;
                                     }
                                 }
-
-                                listOfList.add(feed);
-                                resultLock.lock();
-                                if(result < setOfUrls.size() - 1){
+                                if(result < tmpUrls.size() - 1){
                                     result ++;
                                 } else{
                                     //不够则随机选择
-                                    if(feedList.size() < 5){
-                                        for(Feed e : listOfList.get(listOfList.size() - 1)){
-                                            if(e.getTitle().equals("")) continue;
-                                            boolean isExisted = false;
-                                            for(Feed tmp : feedList){
-                                                if(e.getTitle().equals(tmp.getTitle())){
-                                                    isExisted = true;
+                                    while(feedList.size() < 5){
+                                        Random rand = new Random();
+                                        Integer randomIndex1 = rand.nextInt(2);
+                                        boolean isValid = true;
+                                        if(randomIndex1 == 0){
+                                            Integer randomIndex2 = rand.nextInt(list1.size());
+                                            Feed item = list1.get(randomIndex2);
+                                            if(item.getTitle().equals("")) continue;
+                                            for(Feed e : feedList){
+                                                if(e.getTitle().equals(item.getTitle())){
+                                                    isValid = false;
                                                     break;
                                                 }
                                             }
-                                            if(isExisted) continue;
-                                            else{
-                                                feedList.add(e);
-                                                if(feedList.size() == 5) break;
+                                            if(isValid){
+                                                feedList.add(item);
+                                            }
+                                        } else if(randomIndex1 == 1){
+                                            Integer randomIndex2 = rand.nextInt(list2.size());
+                                            Feed item = list2.get(randomIndex2);
+                                            if(item.getTitle().equals("")) continue;
+                                            for(Feed e : feedList){
+                                                if(e.getTitle().equals(item.getTitle())){
+                                                    isValid = false;
+                                                    break;
+                                                }
+                                            }
+                                            if(isValid){
+                                                feedList.add(item);
                                             }
                                         }
                                     }
+                                    isFinish = true;
                                     HandlerManager.getInstance().sendSuccessMessage();
                                 }
                                 resultLock.unlock();
-                                resultListLock.unlock();
                             }
                         }
                     });

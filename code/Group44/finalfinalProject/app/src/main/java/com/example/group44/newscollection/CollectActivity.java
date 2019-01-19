@@ -93,11 +93,11 @@ public class CollectActivity extends AppCompatActivity {
                 isCardShow = true;
 
                 //previewCard.setVisibility(View.VISIBLE);
-                blackShodow.setVisibility(View.VISIBLE);
-                view_pager.setVisibility(View.VISIBLE);
-                hidden_card.setVisibility(View.VISIBLE);
+//                blackShodow.setVisibility(View.VISIBLE);
+//                view_pager.setVisibility(View.VISIBLE);
+//                hidden_card.setVisibility(View.VISIBLE);
 
-                //view pager定位到当前item
+//                view pager定位到当前item
                 view_pager.setCurrentItem(position);
             }
         });
