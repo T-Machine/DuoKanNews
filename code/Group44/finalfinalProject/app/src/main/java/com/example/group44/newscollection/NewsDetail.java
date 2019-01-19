@@ -162,7 +162,7 @@ public class NewsDetail extends AppCompatActivity {
         //------------------
         Intent intent = getIntent();
         //从intent取出bundle
-        Bundle bundle = intent.getBundleExtra("message");
+        final Bundle bundle = intent.getBundleExtra("message");
 
         commonDialog = new CommonDialog(NewsDetail.this);
         mFavNewsCandidate = UtilsFunction.newsGenerator(
@@ -179,6 +179,7 @@ public class NewsDetail extends AppCompatActivity {
         mTextSize = bundle.getFloat("size");
         oldManModel = bundle.getBoolean("oldManModel");
         TextView tv1 = findViewById(R.id.paragraph);
+
         //改变字体大小
         //tv1.setTextSize(tv1.getTextSize()*mTextSize*2/3);
         if(oldManModel == false) {
@@ -196,7 +197,6 @@ public class NewsDetail extends AppCompatActivity {
         Log.d(TAG, "onCreate: url => " + url);
         TextView src = findViewById(R.id.source);
         src.setText(bundle.getString("source"));
-        //src.setTextSize(src.getTextSize()*2);
         mBitmapUtils = new BitmapUtils(this);
 
 
@@ -339,7 +339,7 @@ public class NewsDetail extends AppCompatActivity {
                     @Override
                     public void onNext(final DetailItem value) {
                         // update UI here
-                        Log.d(TAG, "onNext: " + value.getText());
+//                        Log.d(TAG, "onNext: " + value.getText());
 
                         if(value.getImgURLNum() > 1) {
                             ImageView imgView = findViewById(R.id.newsImage);
@@ -419,11 +419,11 @@ public class NewsDetail extends AppCompatActivity {
 
                                     WordFrequency wf = new WordFrequency(e.getWord(), e.getFrequency());
                                     if(mDatasource.getFrequency(e.getWord()) == null) {
-                                        Log.d(TAG, "run: insert new word into word_frequency table");
+                                        Log.d(TAG, "run: insert new word into word_frequency table: " + e.getWord());
                                         mDatasource.insertNewWord(e.getWord());
                                     }
                                     mDatasource.updateFrequency(wf);
-                                    Log.d(TAG, "run: frequency related " + e.getWord() + mDatasource.getFrequency(e.getWord()));
+                                    Log.d(TAG, "run: frequency related word:" + e.getWord() +"frequency:" + mDatasource.getFrequency(e.getWord()));
                                 }
                             }
                         }.start();
@@ -544,12 +544,10 @@ public class NewsDetail extends AppCompatActivity {
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             intent.setComponent(cmp);
                             startActivity(intent);
-
                         } catch (ActivityNotFoundException e) {
                             // TODO: handle exception
                             Toast toast = Toast.makeText(NewsDetail.this, "没有安装微信，不进行跳转",Toast.LENGTH_LONG);
                             toast.show();
-
                         }
                     }
 
@@ -577,6 +575,9 @@ public class NewsDetail extends AppCompatActivity {
                     Log.d(TAG, "onClick: save favnews into database : " + mFavNewsCandidate.title);
                     //Intent intent2 = new Intent(NewsDetail.this, CollectActivity.class);
                     //startActivity(intent2);
+                    Intent intentBroadcast = new Intent("favourite");
+                    intentBroadcast.putExtras(bundle);
+                    sendBroadcast(intentBroadcast);
                 } else {
                     Log.d(TAG, "onClick: already insert" + mFavNewsCandidate.title);
                     Toast.makeText(NewsDetail.this, "已被收藏，不要重复收藏", Toast.LENGTH_SHORT).show();

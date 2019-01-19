@@ -71,10 +71,11 @@ public class MainActivityNetworkVisit {
     static String tech = "http://newsapi.sina.cn/?resource=feed&lDid=a9f1b781-e891-4198-af53-1fb74ab3ad1b&oldChwm=&upTimes=0&city=&prefetch=99&channel=news_toutiao&link=&ua=Xiaomi-MI+6__sinanews__6.8.8__android__8.0.0&deviceId=aeaaa73c147faf4e&connectionType=2&resolution=1080x1920&weiboUid=&mac=02%3A00%3A00%3A00%3A00%3A00&replacedFlag=0&osVersion=8.0.0&chwm=14010_0001&pullTimes=1&weiboSuid=&andId=301aa36754a2692e&from=6068895012&sn=8a8a0650&behavior=auto&aId=&localSign=a_22eb3a47-189e-44ac-be6d-81ef8ac635b6&deviceIdV1=aeaaa73c147faf4e&todayReqTime=0&osSdk=26&abver=1527581432688&listCount=0&accessToken=&downTimes=0&abt=313_302_297_281_277_275_269_255_253_251_249_242_237_230_228_226_217_215_207_203_191_189_187_171_153_149_143_141_139_135_128_113_111_57_45_38_21_18_16_13&lastTimestamp=0&pullDirection=down&seId=e70c98e4da&imei=868030036302089&deviceModel=Xiaomi__Xiaomi__MI+6&location=0.0%2C0.0&loadingAdTimestamp=0&urlSign=befedbd988&rand=926";
     // 财经
     static String finance = "http://newsapi.sina.cn/?resource=feed&lDid=a9f1b781-e891-4198-af53-1fb74ab3ad1b&oldChwm=&upTimes=0&city=&prefetch=99&channel=news_toutiao&link=&ua=Xiaomi-MI+6__sinanews__6.8.8__android__8.0.0&deviceId=aeaaa73c147faf4e&connectionType=2&resolution=1080x1920&weiboUid=&mac=02%3A00%3A00%3A00%3A00%3A00&replacedFlag=0&osVersion=8.0.0&chwm=14010_0001&pullTimes=1&weiboSuid=&andId=301aa36754a2692e&from=6068895012&sn=8a8a0650&behavior=auto&aId=&localSign=a_22eb3a47-189e-44ac-be6d-81ef8ac635b6&deviceIdV1=aeaaa73c147faf4e&todayReqTime=0&osSdk=26&abver=1527581432688&listCount=0&accessToken=&downTimes=0&abt=313_302_297_281_277_275_269_255_253_251_249_242_237_230_228_226_217_215_207_203_191_189_187_171_153_149_143_141_139_135_128_113_111_57_45_38_21_18_16_13&lastTimestamp=0&pullDirection=down&seId=e70c98e4da&imei=868030036302089&deviceModel=Xiaomi__Xiaomi__MI+6&location=0.0%2C0.0&loadingAdTimestamp=0&urlSign=befedbd988&rand=926";
-
+    private int refreshCount = 0;
     // 加锁
     private volatile Lock resultLock = new ReentrantLock();
     private volatile Lock bigListLock = new ReentrantLock();
+    private Random rand = new Random();
     private Integer bigListNum = 0;
     public static MainActivityNetworkVisit getInstance(){
         if(instance == null){
@@ -86,45 +87,51 @@ public class MainActivityNetworkVisit {
     private int result = 0;
     private boolean finishAll = false;
     public void setUrl(String type){
-        // 根据之前的选择设定url
-        String[] key = null;
-        key = type.split(",");
-        for(String e : key){
-            if(e.equals("1")) {
-                setOfUrls.add(insideCountry);
-                continue;
+        final String ftype = type;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // 根据之前的选择设定url
+                String[] key = null;
+                key = ftype.split(",");
+                for(String e : key){
+                    if(e.equals("1")) {
+                        setOfUrls.add(insideCountry);
+                        continue;
+                    }
+                    if(e.equals("2")) {
+                        setOfUrls.add(outsideCountry);
+                        continue;
+                    }
+                    if(e.equals("3")) {
+                        setOfUrls.add(life);
+                        continue;
+                    }
+                    if(e.equals("4")) {
+                        setOfUrls.add(army);
+                        continue;
+                    }
+                    if(e.equals("5")) {
+                        setOfUrls.add(sports);
+                        continue;
+                    }
+                    if(e.equals("6")) {
+                        setOfUrls.add(entertain);
+                        continue;
+                    }
+                    if(e.equals("7")) {
+                        setOfUrls.add(tech);
+                        continue;
+                    }
+                    if(e.equals("8")) {
+                        setOfUrls.add(finance);
+                        continue;
+                    }
+                }
+                setOfUrls.add(recommand);
+                getNews();
             }
-            if(e.equals("2")) {
-                setOfUrls.add(outsideCountry);
-                continue;
-            }
-            if(e.equals("3")) {
-                setOfUrls.add(life);
-                continue;
-            }
-            if(e.equals("4")) {
-                setOfUrls.add(army);
-                continue;
-            }
-            if(e.equals("5")) {
-                setOfUrls.add(sports);
-                continue;
-            }
-            if(e.equals("6")) {
-                setOfUrls.add(entertain);
-                continue;
-            }
-            if(e.equals("7")) {
-                setOfUrls.add(tech);
-                continue;
-            }
-            if(e.equals("8")) {
-                setOfUrls.add(finance);
-                continue;
-            }
-        }
-        setOfUrls.add(recommand);
-        getNews();
+        }).start();
     }
 
     public void getNews(){
@@ -346,6 +353,15 @@ public class MainActivityNetworkVisit {
                    Log.i("sss", e.getTitle());
                }
                HandlerManager.getInstance().sendSuccessMessage();
+               if(refreshCount >= 3){
+                   bigList.clear();
+                   finishAll = false;
+                   bigListNum = 0;
+                   refreshCount = 0;
+                   getMost();
+               } else{
+                   refreshCount++;
+               }
            }
        }).start();
 
@@ -356,32 +372,38 @@ public class MainActivityNetworkVisit {
         for(int i = 0; i < 5; i++){
             if(i < 1){
                 // 词频
-                for(Feed e : ls){
-                    if(e.getTitle().equals("")) continue;
-                    String origin = e.getTitle() + e.getLongTitle();
-                    ArrayList<String> wordList = JiebaSegmenter.getJiebaSegmenterSingleton().getDividedString(origin);
+                Integer ranIn = rand.nextInt(ls.size());
+                Feed e = ls.get(ranIn);
+                if(e.getTitle().equals("")) continue;
+                String origin = e.getTitle() + e.getLongTitle();
+                ArrayList<String> wordList = JiebaSegmenter.getJiebaSegmenterSingleton().getDividedString(origin);
 
-                    // 是否出现过
-                    boolean isExisted = false;
-                    for(Feed tmp : feedList){
-                        if(tmp.getTitle().equals(e.getTitle())){
-                            isExisted = true;
-                            break;
-                        }
+                // 是否出现过
+                boolean isExisted = false;
+                for(Feed tmp : feedList){
+                    if(tmp.getTitle().equals(e.getTitle())){
+                        isExisted = true;
+                        break;
                     }
-                    if(isExisted) continue;
-                    for(String str : wordList){
-                        if(!DetectWords.inValid(str)) continue;
-                        if(mDatasource.getFrequency(str) != null) {
-                            Log.d("JIEBA", "fetch" + str);
-                            feedList.add(e);
-                            break;
-                        }
+                }
+                if(isExisted){
+                    i--;
+                    continue;
+                }
+                for(String str : wordList){
+                    if(!DetectWords.inValid(str)) continue;
+                    if(mDatasource.getFrequency(str) != null) {
+                        Log.d("JIEBA", "fetch" + str);
+                        feedList.add(e);
+                        break;
                     }
+                }
+                if(feedList.size() == 0){
+                    i--;
+                    continue;
                 }
             } else{
                 boolean isValid = true;
-                Random rand = new Random();
                 Integer it = ls.size();
                 Log.i("sum", it.toString());
                 Integer randomIndex = rand.nextInt(ls.size());

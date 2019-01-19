@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -37,6 +38,7 @@ public class CollectActivity extends AppCompatActivity {
     ImageView hidden_card;
     ViewPager view_pager;
 
+    private static String TAG = "COLLECT_ACTIVITY";
     private AppRepository mDatasource;
 
 
@@ -78,6 +80,7 @@ public class CollectActivity extends AppCompatActivity {
             public void convert(MyViewHolder holder, FavoriteNews s) {
                 ImageView img = holder.getView(R.id.iv_icon);
                 TextView title = holder.getView(R.id.tv_item_title);
+
                 //title.setTextSize(title.getTextSize()*mTextsize/3);
                 if(oldManModel == false) {
                     title.setTextSize(18);
@@ -119,6 +122,7 @@ public class CollectActivity extends AppCompatActivity {
             @Override
             public void onLongClick(int position) {
                 // 处理长按事件
+                final int index = position;
                 final FavoriteNews item = (FavoriteNews) myAdapter.getItem(position);
                 final Dialog dialog1 = new Dialog(CollectActivity.this);
                 View contentView = LayoutInflater.from(CollectActivity.this).inflate(
@@ -138,13 +142,20 @@ public class CollectActivity extends AppCompatActivity {
                     public void onClick(View view) {
                         //TODO: 删除收藏项
 
+                        String title = mNewsList.get(index).title;
+                        // 删除数据库中的对象
+                        mDatasource.deleteFavNews(title);
+                        // 删除内存中的对象
+                        mNewsList.remove(index);
+                        myAdapter.notifyDataSetChanged();
+                        Log.d(TAG, "onLongClick: delete favorite news " + title);
+
                         dialog1.dismiss();
                     }
                 });
                 dialog1.setContentView(contentView);
                 dialog1.setCanceledOnTouchOutside(true);
                 dialog1.show();
-                int a = 0;
             }
         });
         recyclerView = (RecyclerView)findViewById(R.id.collectRecyclerView);

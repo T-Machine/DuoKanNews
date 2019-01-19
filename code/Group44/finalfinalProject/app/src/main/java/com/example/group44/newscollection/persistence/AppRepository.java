@@ -94,7 +94,7 @@ public class AppRepository {
      * 删除特定的词
      * @return
      */
-    public void deleteAllWFPair(String word) {
+    public void deleteWFPair(String word) {
         mAppDao.deleteWord(word);
     }
 
@@ -124,6 +124,14 @@ public class AppRepository {
      */
     public List<FavoriteNews> queryNewsByTitle(String title) {
         return mAppDao.getFavoriteNewsByTitle(title);
+    }
+
+    /**
+     * 删除收藏的新闻
+     * @param title =》 要被删除的新闻
+     */
+    public void deleteFavNews(String title) {
+        mAppDao.deleteFavNewsByTitle(title);
     }
 
 }
