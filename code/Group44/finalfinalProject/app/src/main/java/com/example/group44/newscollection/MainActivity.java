@@ -108,6 +108,7 @@ public class MainActivity extends AppCompatActivity
     ArrayList<Feed> feedList;
 
     //设置的状态
+    Boolean isBroad = false;
     //public static final String PREFERENCE_NAME = "SaveSetting";
 
 
@@ -119,6 +120,9 @@ public class MainActivity extends AppCompatActivity
                 processData();
                 MainActivityNetworkVisit.getInstance().getMost();
 
+                if(isBroad) {
+                    sendBroadcast();
+                }
             } else{
                 // todo:无网络访问处理.
                 final Dialog dialog = new Dialog(getApplication());
@@ -264,10 +268,11 @@ public class MainActivity extends AppCompatActivity
         view.getItem(2).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                Toast.makeText(MainActivity.this, "test", Toast.LENGTH_SHORT).show();
+
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 if(view.getItem(2).getTitle().toString().equals("开启推送模式")) {
                     view.getItem(2).setTitle("关闭推送模式");
+                    Toast.makeText(MainActivity.this, "我想静静!", Toast.LENGTH_SHORT).show();
                     /*
                     * 推送部分
                     * */
@@ -277,6 +282,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 else {
                     view.getItem(2).setTitle("开启推送模式");
+                    Toast.makeText(MainActivity.this, "推送走起!", Toast.LENGTH_SHORT).show();
                     editor.putBoolean("isBroad", false);
                     editor.commit();
                 }
@@ -290,10 +296,14 @@ public class MainActivity extends AppCompatActivity
                 if(oldManModel == false) {
                     oldManModel = true;
                     view.getItem(3).setTitle("关闭老人模式");
+                    Toast.makeText(MainActivity.this, "大字体，看得爽!", Toast.LENGTH_SHORT).show();
+                    isBroad = true;
                 }
                 else {
                     oldManModel = false;
                     view.getItem(3).setTitle("开启老人模式");
+                    Toast.makeText(MainActivity.this, "小字体，更精致!", Toast.LENGTH_SHORT).show();
+                    isBroad = false;
                 }
                 for (int i = 0; i < pages.size(); i++) {
                     View one = pages.get(i);
@@ -467,7 +477,8 @@ public class MainActivity extends AppCompatActivity
         //----------------------------------
         //推荐内容部分
         //----------------------------------
-        boolean isBroad = sharedPreferences.getBoolean("isBroad", false);
+
+        isBroad = sharedPreferences.getBoolean("isBroad", false);
         if(isBroad) {
             view.getItem(2).setTitle("关闭推送模式");
             sendBroadcast();

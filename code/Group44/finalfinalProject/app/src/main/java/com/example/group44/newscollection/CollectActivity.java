@@ -88,6 +88,7 @@ public class CollectActivity extends AppCompatActivity {
                 else {
                     title.setTextSize(22);
                 }
+
                 TextView time = holder.getView(R.id.tv_item_date);
                 if(s.title != null){
                     title.setText(s.title);
