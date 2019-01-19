@@ -271,7 +271,7 @@ public class MainActivity extends AppCompatActivity
         view.getItem(2).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                
+
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 if(view.getItem(2).getTitle().toString().equals("开启推送模式")) {
                     view.getItem(2).setTitle("关闭推送模式");
