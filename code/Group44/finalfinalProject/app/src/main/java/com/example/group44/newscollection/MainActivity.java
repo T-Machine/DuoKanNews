@@ -135,6 +135,7 @@ public class MainActivity extends AppCompatActivity
 
     //字体大小
     float mTextSize = (float) 1.0;
+    Boolean oldManModel = false;
     // 加载框
     LoadingDialog ld;
     @Override
@@ -229,25 +230,51 @@ public class MainActivity extends AppCompatActivity
         view.getItem(3).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                Toast.makeText(MainActivity.this, "test", Toast.LENGTH_SHORT).show();
-                //调整字体大小
-                if (mTextSize > 1) {
-                    mTextSize = (float) 1/(float) 1.5;
-                    view.getItem(3).setTitle("开启老人模式");
-                }
-                else {
-                    mTextSize = (float) 1.5;
+                if(oldManModel == false) {
+                    oldManModel = true;
                     view.getItem(3).setTitle("关闭老人模式");
                 }
-                myAdapter.notifyDataSetChanged();
+                else {
+                    oldManModel = false;
+                    view.getItem(3).setTitle("开启老人模式");
+                }
                 for (int i = 0; i < pages.size(); i++) {
                     View one = pages.get(i);
                     TextView title = one.findViewById(R.id.previewTitle);
                     TextView content = one.findViewById(R.id.previewContent);
-                    title.setTextSize(title.getTextSize()*mTextSize/3);
-                    content.setTextSize(content.getTextSize()*mTextSize/3);
+                    //修改字体大小
+                    if(oldManModel == false) {
+                        title.setTextSize(20);
+                        content.setTextSize(16);
+                    }
+                    else {
+                        title.setTextSize(25);
+                        content.setTextSize(21);
+                    }
                 }
+                myAdapter.notifyDataSetChanged();
                 return false;
+
+                //Toast.makeText(MainActivity.this, "test", Toast.LENGTH_SHORT).show();
+                //调整字体大小
+//                if (mTextSize > 1) {
+//                    mTextSize = (float) 1/(float) 1.5;
+//                    view.getItem(3).setTitle("开启老人模式");
+//                }
+//                else {
+//                    mTextSize = (float) 1.5;
+//                    view.getItem(3).setTitle("关闭老人模式");
+//                }
+//                myAdapter.notifyDataSetChanged();
+//                for (int i = 0; i < pages.size(); i++) {
+//                    View one = pages.get(i);
+//                    TextView title = one.findViewById(R.id.previewTitle);
+//                    TextView content = one.findViewById(R.id.previewContent);
+//                    //修改字体大小
+//                    title.setTextSize(title.getTextSize()*mTextSize/3);
+//                    content.setTextSize(content.getTextSize()*mTextSize/3);
+//                }
+//                return false;
             }
         });
 
@@ -325,6 +352,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onRefresh(@NonNull RefreshLayout refreshLayout) {
                 myAdapter.clearItem();
+                myAdapter.notifyDataSetChanged();
                 MainActivityNetworkVisit.getInstance().getNews();
 //                List<String>  data = initDatas();
 //                Message message = new Message();
@@ -486,8 +514,19 @@ public class MainActivity extends AppCompatActivity
             TextView read = card_view.findViewById(R.id.readMore);
             TextView title = card_view.findViewById(R.id.previewTitle);
             TextView content = card_view.findViewById(R.id.previewContent);
-            title.setTextSize(title.getTextSize()*mTextSize/3);
-            content.setTextSize(content.getTextSize()*mTextSize/3);
+//            title.setTextSize(title.getTextSize()*mTextSize/3);
+//            content.setTextSize(content.getTextSize()*mTextSize/3);
+
+            //修改字体大小
+            if(oldManModel == false) {
+                title.setTextSize(20);
+                content.setTextSize(16);
+            }
+            else {
+                title.setTextSize(25);
+                content.setTextSize(21);
+            }
+
             ImageView img = card_view.findViewById(R.id.iv_icon);
             content.setText(item.getSummary());
             title.setText(item.getTitle());
