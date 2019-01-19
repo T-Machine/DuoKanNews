@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.group44.newscollection.JSON.Feed;
 import com.example.group44.newscollection.adapter.MyRecyclerViewAdapter;
@@ -34,6 +35,8 @@ public class CollectActivity extends AppCompatActivity {
 
     private AppRepository mDatasource;
 
+
+    private Boolean oldManModel;
     private float mTextsize;
     private ArrayList<FavoriteNews> mNewsList;
     private List<View> pages;
@@ -53,6 +56,7 @@ public class CollectActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         mTextsize = bundle.getFloat("size");
+        oldManModel = bundle.getBoolean("oldManModel");
 
         // setup database
         mDatasource = new AppRepository(this);
@@ -70,7 +74,13 @@ public class CollectActivity extends AppCompatActivity {
             public void convert(MyViewHolder holder, FavoriteNews s) {
                 ImageView img = holder.getView(R.id.iv_icon);
                 TextView title = holder.getView(R.id.tv_item_title);
-                title.setTextSize(title.getTextSize()*mTextsize/3);
+                //title.setTextSize(title.getTextSize()*mTextsize/3);
+                if(oldManModel == false) {
+                    title.setTextSize(18);
+                }
+                else {
+                    title.setTextSize(22);
+                }
                 TextView time = holder.getView(R.id.tv_item_date);
                 if(s.title != null){
                     title.setText(s.title);
@@ -87,18 +97,25 @@ public class CollectActivity extends AppCompatActivity {
             @Override
             public void onClick(int position) {
                 // 处理单击事件
-                if(isCardShow == true) {
-                    return;
-                }
-                isCardShow = true;
+                final FavoriteNews item = (FavoriteNews) myAdapter.getItem(position);
+                Bundle bundle = new Bundle();
+                bundle.putString("url", item.srcUrl);
+                bundle.putString("imgUrl",item.imgUrl);
+                //bundle.putString("source",item.digest);
+                bundle.putString("title", item.title);
+//                    bundle.putString("pubDate");
+                bundle.putString("digest", item.digest);
+                bundle.putFloat("size", 1);
+                bundle.putBoolean("oldManModel", oldManModel);
+                Intent intent = new Intent(CollectActivity.this, NewsDetail.class);
+                intent.putExtra("message",bundle);
+                startActivity(intent);
+            }
 
-                //previewCard.setVisibility(View.VISIBLE);
-//                blackShodow.setVisibility(View.VISIBLE);
-//                view_pager.setVisibility(View.VISIBLE);
-//                hidden_card.setVisibility(View.VISIBLE);
+            @Override
+            public void onLongClick(int position) {
+                // 处理长按事件
 
-//                view pager定位到当前item
-                view_pager.setCurrentItem(position);
             }
         });
         recyclerView = (RecyclerView)findViewById(R.id.collectRecyclerView);
