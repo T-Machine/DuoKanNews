@@ -51,7 +51,7 @@
                 android:layout_marginTop="5dp"
                 app:layout_constraintTop_toBottomOf="@+id/quotation_up"
                 android:text="新闻Titl新闻Titl新闻Titl新闻Titl新闻Titl新闻Titl"
-                android:textSize="20dp"/>
+                android:textSize="20sp"/>
 
             <TextView
                 android:id="@+id/previewContent"
@@ -64,7 +64,7 @@
                 android:paddingLeft="8dp"
                 app:layout_constraintTop_toBottomOf="@+id/previewTitle"
                 android:text="Android5.0中向我们介绍了一个全新的控件–CardView，从本质上看，可以将CardView看做是FrameLayout在自身之上添加了圆角和阴影效果。"
-                android:textSize="16dp"/>
+                android:textSize="16sp"/>
 
             <ImageView
                 android:id="@+id/quotation_down"
@@ -86,7 +86,7 @@
                 app:layout_constraintRight_toRightOf="parent"
                 android:textColor="#364e68"
                 android:text="阅读更多"
-                android:textSize="15dp"
+                android:textSize="15sp"
                 android:layout_marginBottom="15dp"/>
 
         </android.support.constraint.ConstraintLayout>
