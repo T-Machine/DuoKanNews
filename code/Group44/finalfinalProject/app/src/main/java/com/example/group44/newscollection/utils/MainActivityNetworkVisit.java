@@ -204,41 +204,20 @@ public class MainActivityNetworkVisit {
                                 } else{
                                     //不够则随机选择
                                     if(feedList.size() < 5){
-                                        // 需要有推荐新闻 * 2
-                                        boolean isFirst = true;
-                                        boolean isSecond = true;
-                                        boolean isExisted = false;
-                                        while(feedList.size() < 5){
-                                            Random rand = new Random();
-                                            Integer randomIndex1 = rand.nextInt(listOfList.size());
-                                            if(!isFirst && isSecond){
-                                                randomIndex1 = listOfList.size() - 1;
-                                                isSecond = false;
-                                            }
-                                            if(isFirst && isSecond){
-                                                randomIndex1 = listOfList.size() - 1;
-                                                isFirst = false;
-                                            }
-
-                                            if(listOfList.get(randomIndex1).size() == 0) break;
-                                            Integer randomIndex2 = rand.nextInt(listOfList.get(randomIndex1).size());
-                                            Feed tmp = listOfList.get(randomIndex1).get(randomIndex2);
-                                            if(tmp.getTitle().equals("")) continue;
-                                            Log.i("random", randomIndex1.toString() + " " + randomIndex2.toString() + " " + feedList.size());
-                                            for(Feed e : feedList){
+                                        for(Feed e : listOfList.get(listOfList.size() - 1)){
+                                            if(e.getTitle().equals("")) continue;
+                                            boolean isExisted = false;
+                                            for(Feed tmp : feedList){
                                                 if(e.getTitle().equals(tmp.getTitle())){
                                                     isExisted = true;
-                                                    Log.i("random",tmp.getTitle() + " " + e.getTitle() + "isExisted");
                                                     break;
-
                                                 }
                                             }
-                                            // 存在去除
-                                            if(isExisted){
-                                                listOfList.get(randomIndex1).remove(tmp);
-                                                continue;
+                                            if(isExisted) continue;
+                                            else{
+                                                feedList.add(e);
+                                                if(feedList.size() == 5) break;
                                             }
-                                            feedList.add(tmp);
                                         }
                                     }
                                     HandlerManager.getInstance().sendSuccessMessage();

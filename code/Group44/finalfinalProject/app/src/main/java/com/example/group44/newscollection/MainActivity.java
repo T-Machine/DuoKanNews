@@ -129,14 +129,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // 网络访问相关
-        SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-        // 给连接
-        String type = shared.getString("collection","1,2,3,4,5,6,7,8");
         HandlerManager.getInstance().setHandler(handler);
-        MainActivityNetworkVisit.getInstance().setContext(MainActivity.this);
-        MainActivityNetworkVisit.getInstance().setUrl(type);
-        Log.i("send url to visit util", type);
 
         // 加载框---------------
         ld = new LoadingDialog(MainActivity.this);
@@ -256,6 +249,7 @@ public class MainActivity extends AppCompatActivity
                 startActivityForResult(intent, 0);
             }
         });
+        SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
         String un = shared.getString("user","Admin");
         Log.i("username", un);
         CharSequence cs = un;

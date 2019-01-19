@@ -146,12 +146,18 @@ public class NewsDetail extends AppCompatActivity {
 
     //字体大小
     float mTextSize;
-
+    LoadingDialog ld;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         final GoodView goodView = new GoodView(this);
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_news_detail);
+        // 加载框---------------
+        ld = new LoadingDialog(NewsDetail.this);
+        ld.show();
+        findViewById(R.id.DetailPage).setVisibility(View.INVISIBLE);
+        //------------------
         Intent intent = getIntent();
         //从intent取出bundle
         Bundle bundle = intent.getBundleExtra("message");
@@ -411,6 +417,8 @@ public class NewsDetail extends AppCompatActivity {
                                 }
                             }
                         }.start();
+                        findViewById(R.id.DetailPage).setVisibility(View.VISIBLE);
+                        ld.dismiss();
                     }
                 });
 
