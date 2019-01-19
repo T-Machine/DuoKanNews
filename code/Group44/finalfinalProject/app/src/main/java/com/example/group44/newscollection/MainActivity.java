@@ -1,9 +1,13 @@
 package com.example.group44.newscollection;
 
+import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,9 +33,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.group44.newscollection.JSON.Feed;
 import com.example.group44.newscollection.JSON.JsonRootBean;
@@ -103,6 +109,26 @@ public class MainActivity extends AppCompatActivity
         ld = new LoadingDialog(MainActivity.this);
         ld.show();
         findViewById(R.id.drawer_layout).setVisibility(View.INVISIBLE);
+        //------------------
+
+        // 判断网络状态-------
+        ConnectivityManager connectivityManager = (ConnectivityManager) this.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo info = connectivityManager.getActiveNetworkInfo();
+        if(info == null || !info.isConnected()) {
+            final Dialog dialog = new Dialog(this);
+            View contentView = LayoutInflater.from(this).inflate(
+                    R.layout.dialog_recommend, null);
+            dialog.setContentView(contentView);
+            dialog.setCanceledOnTouchOutside(true);
+            Button OK = contentView.findViewById(R.id.OkButton);
+            OK.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
+                }
+            });
+            dialog.show();
+        }
         //------------------
 
         // 获得用户名

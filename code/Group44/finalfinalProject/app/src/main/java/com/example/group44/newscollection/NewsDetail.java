@@ -1,5 +1,6 @@
 package com.example.group44.newscollection;
 
+import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -7,6 +8,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,11 +17,13 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -166,6 +171,26 @@ public class NewsDetail extends AppCompatActivity {
         TextView src = findViewById(R.id.source);
         src.setText(bundle.getString("source"));
         mBitmapUtils = new BitmapUtils(this);
+
+        // 判断网络状态-------
+        ConnectivityManager connectivityManager = (ConnectivityManager) this.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo info = connectivityManager.getActiveNetworkInfo();
+        if(info == null || !info.isConnected()) {
+            final Dialog dialog = new Dialog(this);
+            View contentView = LayoutInflater.from(this).inflate(
+                    R.layout.dialog_recommend, null);
+            dialog.setContentView(contentView);
+            dialog.setCanceledOnTouchOutside(true);
+            Button OK = contentView.findViewById(R.id.OkButton);
+            OK.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
+                }
+            });
+            dialog.show();
+        }
+        //------------------
 
         // RXJava获得内容
         Observable.create(new ObservableOnSubscribe<DetailItem>() {
