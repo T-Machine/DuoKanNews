@@ -46,4 +46,12 @@ public interface AppDao {
     @Query("SELECT * from fav_news WHERE title == :title ORDER BY id ASC")
     List<FavoriteNews> getFavoriteNewsByTitle(String title);
 
+//
+    @Query("DELETE FROM fav_news WHERE title == :title")
+    void deleteFavNewsByTitle(String title);
+
+//    @Delete
+//    void deleteFavNewsByTitle(FavoriteNews news);
+
+
 }

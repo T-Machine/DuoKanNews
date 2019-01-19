@@ -89,17 +89,30 @@ public class AppDaoTest {
     }
 
     @Test
+    public void deleteNews() {
+        WordFrequency wf1 = new WordFrequency("aaa", 1);
+        mDao.insertWF(wf1);
+        assertEquals(mDao.getFrequency("aaa"), wf1.getFrequency());
+        mDao.deleteWord("aaa");
+        assertNull(mDao.getFrequency("aaa"));
+    }
+
+    @Test
     public void insertFavNews() {
         /**
          * this test function tests both query and insert functionality of DAO
          */
-        mDao.insertFavNews(UtilsFunction.newsGenerator(
+        FavoriteNews news = UtilsFunction.newsGenerator(
                 "title1",
                 "abc",
                 "abc",
                 "abc"
-        ));
+        );
+
+        mDao.insertFavNews(news);
         Log.d(TAG, "insertFavNews: size of query : " + mDao.getAllFavoriteNews().size());
         assertEquals(mDao.getAllFavoriteNews().get(0).title, "title1");
+        mDao.deleteFavNewsByTitle(news.title);
+        assertEquals(mDao.getAllFavoriteNews().size(), 0);
     }
 }

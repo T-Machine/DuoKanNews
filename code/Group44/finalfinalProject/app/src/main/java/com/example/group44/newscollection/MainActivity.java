@@ -142,9 +142,6 @@ public class MainActivity extends AppCompatActivity
         }
     };
 
-
-
-
     //字体大小
     float mTextSize = (float) 1.0;
     Boolean oldManModel = false;
