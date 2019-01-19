@@ -111,6 +111,7 @@ public class MainActivity extends AppCompatActivity
             if(msg.what == 200){
                 feedList = MainActivityNetworkVisit.getInstance().getFeedList();
                 processData();
+                MainActivityNetworkVisit.getInstance().getMost();
             } else{
                 // todo:无网络访问处理.
             }
@@ -311,13 +312,28 @@ public class MainActivity extends AppCompatActivity
         mRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh(@NonNull RefreshLayout refreshLayout) {
-//                List<String>  data = initDatas();
-//                Message message = new Message();
-//                message.what = 1 ;
-//                message.obj = data ;
-//                mHandler.sendMessageDelayed(message,2000);
-                // 异步操作
-                refreshLayout.finishRefresh();
+//                myAdapter.clearAll();
+//                feedList.clear();
+//                myAdapter.notifyDataSetChanged();
+//
+////                List<String>  data = initDatas();
+////                Message message = new Message();
+////                message.what = 1 ;
+////                message.obj = data ;
+////                mHandler.sendMessageDelayed(message,2000);
+//                // 异步操作
+//                refreshLayout.finishRefresh();
+//                MainActivityNetworkVisit.getInstance().getNews();
+                myAdapter.clearAll();
+                myAdapter.notifyDataSetChanged();
+                MainActivityNetworkVisit.getInstance().getNewsAgain();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mRefreshLayout.finishRefresh();
+
+                    }
+                }, 2500);
             }
         });
 
