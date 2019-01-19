@@ -49,13 +49,17 @@ public class AppDaoTest {
         // 先插入之后再删除，查看不同的地方
 
         WordFrequency wf1 = new WordFrequency("aaa", 1);
+        WordFrequency wf3 = new WordFrequency("ccc", 3);
         WordFrequency wf2 = new WordFrequency("bbb", 2);
         mDao.insertWF(wf1);
+        mDao.insertWF(wf3);
         mDao.insertWF(wf2);
         List<WordFrequency> allData = mDao.getAllWordFrequencyPair();
 
-        assertEquals(allData.get(0).getFrequency(), wf1.getFrequency());
-        assertEquals(allData.get(1).getFrequency(), wf1.getFrequency());
+        assertEquals(allData.get(0).getFrequency(), new Integer(1));
+        assertEquals(allData.get(1).getFrequency(), new Integer(2));
+        assertEquals(allData.get(2).getFrequency(), new Integer(3));
+
     }
 
     @Test
@@ -64,9 +68,7 @@ public class AppDaoTest {
         mDao.insertWF(wf1);
         WordFrequency wf2 = new WordFrequency("aaa", 2);
         mDao.updateFrequency(wf2);
-
         assertEquals(mDao.getFrequency("qqq"), null);
-
         assertEquals(mDao.getFrequency("aaa"), wf2.getFrequency());
     }
 
