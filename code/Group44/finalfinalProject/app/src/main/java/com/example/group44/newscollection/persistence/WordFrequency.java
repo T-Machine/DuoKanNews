@@ -15,7 +15,7 @@ public class WordFrequency {
 
     @NonNull
     @ColumnInfo(name = "frequency")
-    private int mFrequency;
+    private Integer mFrequency;
 
     public WordFrequency(@NonNull String word, @NonNull int frequency) {
         this.mWord = word;
@@ -28,9 +28,12 @@ public class WordFrequency {
     }
 
     @NonNull
-    public int getFrequency() {
+    public Integer getFrequency() {
         return this.mFrequency;
     }
 
+    public void add() {
+        mFrequency++;
+    }
 
 }

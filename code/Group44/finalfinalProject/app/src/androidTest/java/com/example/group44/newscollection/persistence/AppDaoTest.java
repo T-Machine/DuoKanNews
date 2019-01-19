@@ -53,6 +53,7 @@ public class AppDaoTest {
         mDao.insertWF(wf1);
         mDao.insertWF(wf2);
         List<WordFrequency> allData = mDao.getAllWordFrequencyPair();
+
         assertEquals(allData.get(0).getFrequency(), wf1.getFrequency());
         assertEquals(allData.get(1).getFrequency(), wf1.getFrequency());
     }
@@ -63,6 +64,9 @@ public class AppDaoTest {
         mDao.insertWF(wf1);
         WordFrequency wf2 = new WordFrequency("aaa", 2);
         mDao.updateFrequency(wf2);
+
+        assertEquals(mDao.getFrequency("qqq"), null);
+
         assertEquals(mDao.getFrequency("aaa"), wf2.getFrequency());
     }
 
@@ -80,11 +84,9 @@ public class AppDaoTest {
          */
         mDao.insertFavNews(UtilsFunction.newsGenerator(
                 "title1",
-//                new Date(),
                 "abc",
                 "abc",
                 "abc"
-//                "abc"
         ));
         Log.d(TAG, "insertFavNews: size of query : " + mDao.getAllFavoriteNews().size());
         assertEquals(mDao.getAllFavoriteNews().get(0).title, "title1");
