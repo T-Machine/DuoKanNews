@@ -7,7 +7,9 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
@@ -23,8 +25,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+
+import com.example.group44.newscollection.JSON.Feed;
+import com.example.group44.newscollection.persistence.AppDatabase;
+import com.example.group44.newscollection.persistence.DetectWords;
+import com.example.group44.newscollection.persistence.FavoriteNews;
 import com.example.group44.newscollection.persistence.AppRepository;
 import com.example.group44.newscollection.persistence.FavoriteNews;
+import com.example.group44.newscollection.persistence.WordFrequency;
 import com.example.group44.newscollection.utils.UtilsFunction;
 import com.lidroid.xutils.BitmapUtils;
 import com.wx.goodview.GoodView;
@@ -36,6 +44,8 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -45,6 +55,7 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import jackmego.com.jieba_android.JiebaSegmenter;
 
 public class NewsDetail extends AppCompatActivity {
 
@@ -114,7 +125,6 @@ public class NewsDetail extends AppCompatActivity {
 
     // view
     private TextView mContentText;
-    private ImageView mContentImg;
     private TextView mTitle;
     private VideoView mVideoView;
 
@@ -122,22 +132,28 @@ public class NewsDetail extends AppCompatActivity {
     private AppRepository mDatasource;
     private FavoriteNews mFavNewsCandidate;
 
+    // 不喜欢的原因对话框
+    CommonDialog commonDialog;
+    boolean isWordNull = false;
+    ArrayList<String> favWords = new ArrayList<>();
+
+    Handler handler = new Handler();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        final GoodView goodView = new GoodView(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_detail);
         Intent intent = getIntent();
         //从intent取出bundle
         Bundle bundle = intent.getBundleExtra("message");
-
+        commonDialog = new CommonDialog(NewsDetail.this);
         mFavNewsCandidate = UtilsFunction.newsGenerator(
                 bundle.getString("title"),
                 bundle.getString("digest"),
                 bundle.getString("url"),
                 bundle.getString("imgUrl")
         );
-        // setup view
-        mContentImg = findViewById(R.id.detail_content_img);
         mContentText = findViewById(R.id.paragraph);
         mTitle = findViewById(R.id.title);
 
@@ -158,16 +174,80 @@ public class NewsDetail extends AppCompatActivity {
                 Document doc = Jsoup.connect(url).get();
                 DetailItem res = new DetailItem();
                 Element body = doc.body();
-                // only one element
+
+
+                // 判断是否存在视频并增加跳转
+                Elements videoElements = body.select(".art_video");
+                Elements videoElements2 = body.select(".aplayer");
+                if(videoElements.size() == 0 && videoElements2.size() != 0){
+                    videoElements = videoElements2;
+                }
+                if(videoElements.size() != 0){
+                    Log.i("figure.art_video",url);
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            ImageView imgButton = findViewById(R.id.videoBtn);
+                            imgButton.setVisibility(View.VISIBLE);
+                            imgButton.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                // 复制到剪贴板
+                                public void onClick(View v) {
+                                    final View tv = v;
+
+                                    goodView.setText("看视频");
+                                    goodView.show(v);
+                                    //动作
+                                    AlphaAnimation disappearAnimation = new AlphaAnimation(1, 0);
+                                    disappearAnimation.setDuration(400);
+                                    disappearAnimation.setAnimationListener(new Animation.AnimationListener() {
+                                        @Override
+                                        public void onAnimationStart(Animation animation) {
+
+                                        }
+
+                                        @Override
+                                        public void onAnimationEnd(Animation animation) {
+                                            tv.setAlpha(1);
+                                            // 跳转微信
+                                            try {
+                                                Uri uri = Uri.parse(url);
+                                                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                                                startActivity(intent);
+
+                                            } catch (ActivityNotFoundException e) {
+                                                // TODO: handle exception
+                                                Toast toast = Toast.makeText(NewsDetail.this, "没有进行浏览器跳转",Toast.LENGTH_LONG);
+                                                toast.show();
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onAnimationRepeat(Animation animation) {
+
+                                        }
+                                    });
+                                    v.startAnimation(disappearAnimation);
+                                }
+                            });
+                        }
+                    });
+                }
+
+
+                // 进行文字解析
                 Elements p = body.select("p");
 
                 StringBuilder buf = new StringBuilder();
                 for(Element e : p) {
-                    String s = e.text();
-//                    if(s.indexOf('\n') == -1) {
-//                        s += '\n';
-//                        s += '\n';
-//                    }
+                    String s = "      ";
+                    s += e.text();
+                    if(s.indexOf('\n') == -1) {
+                        s += '\n';
+                        s += '\n';
+                    }
+                    // 去除干扰
+                    if(s.indexOf("图为") != -1) continue;
                     buf.append(s);
                 }
                 res.setText(buf.toString());
@@ -216,10 +296,37 @@ public class NewsDetail extends AppCompatActivity {
                             Log.d(TAG, "onNext: No imgs here");
                         }
 
+//                        String origin = value.getText();
+//                        // 分句
+//                        ArrayList<String> subSentances = new ArrayList<>();
+//                        while(origin.indexOf("。") != -1){
+//                            subSentances.add(origin.substring(0, origin.indexOf("。") + 1));
+//                            origin = origin.substring(origin.indexOf("。") + 1);
+//                        }
+//
+//                        // 分段
+//                        String complete = "        ";
+//                        if(subSentances.size() > 14){
+//                            Integer subParagraph = subSentances.size() / 7;
+//                            for(int i = 0; i < subSentances.size(); ++i){
+//                                complete += subSentances.get(i);
+//                                if(i % subParagraph == 0 && i != 0){
+//                                    complete += "\n\n       ";
+//                                }
+//                            }
+//                        }else{
+//                            for(String e : subSentances){
+//                                complete += e;
+//                            }
+//                        }
                         mContentText.setText(value.getText());
                         String title = value.getTitle();
-                        title.replace("_手机新浪网", "");
-                        title.replace("_新浪视频", "");
+                        if(title.indexOf("_手机新浪网") != -1){
+                            title = title.substring(0,title.indexOf("_手机新浪网"));
+                        }
+                        if(title.indexOf("_新浪视频") != -1){
+                            title = title.substring(0,title.indexOf("_新浪视频"));
+                        }
                         mTitle.setText(title);
                     }
 
@@ -228,14 +335,64 @@ public class NewsDetail extends AppCompatActivity {
                         Log.d(TAG, " error occur : " + e.getMessage());
                     }
 
+                    // 进行分词处理
                     @Override
                     public void onComplete() {
-//                        Log.d(TAG, "Complete Sending Paragraph");
-//                        setViewPager();
+                        TextView tv = findViewById(R.id.paragraph);
+                        if(tv.getText().toString().equals("")) return;
+                        final String analizedString = tv.getText().toString();
+                        // 多线程分词
+                        new Thread(){
+                            // 排序
+                            class SortByFrequency implements Comparator {
+                                public int compare(Object o1, Object o2) {
+                                    String_val s1 = (String_val) o1;
+                                    String_val s2 = (String_val) o2;
+                                    if (s1.getVal() < s2.getVal())
+                                        return 1;
+                                    else if(s1.getVal() == s2.getVal()) return 0;
+                                    return -1;
+                                }
+                            }
+
+                            @Override
+                            public void run(){
+                                ArrayList<String_val> local_str_val = new ArrayList<>();
+                                ArrayList<String> wordList = JiebaSegmenter.getJiebaSegmenterSingleton().getDividedString(analizedString);
+                                for(String str : wordList){
+                                    if(str.length() <= 2) continue;
+                                    // 筛选
+                                    if(!DetectWords.inValid(str)) continue;
+                                    boolean flag = false;
+                                    for(String_val e : local_str_val){
+                                        if(e.getChara().equals(str)){
+                                            local_str_val.get(local_str_val.indexOf(e)).add();
+                                            flag = true;
+                                            break;
+                                        }
+                                    }
+                                    if(!flag){
+                                        String_val tmp = new String_val(str, 1);
+                                        local_str_val.add(tmp);
+                                    }
+                                }
+                                if(local_str_val.size() == 0) {
+                                    isWordNull = true;
+                                    return;
+                                }
+                                // 排序
+                                Collections.sort(local_str_val, new SortByFrequency());
+                                for(int i = 0; i < local_str_val.size() && i < 4; i++){
+                                    String_val e = local_str_val.get(i);
+                                    favWords.add(e.getChara());
+                                    Log.i("analyze", e.getChara() + " " + e.getVal().toString());
+                                    // todo:永久化保存数据。如果存在数据则加上对应的val值，如果没有则进行保存。
+                                }
+                            }
+                        }.start();
                     }
                 });
 
-        final GoodView goodView = new GoodView(this);
         ImageView imgButton = findViewById(R.id.dislikeButton);
         ImageView collectionBtn = findViewById(R.id.collectionBtn);
         collectionBtn.setOnClickListener(new View.OnClickListener() {
@@ -298,8 +455,12 @@ public class NewsDetail extends AppCompatActivity {
                     @Override
                     public void onAnimationEnd(Animation animation) {
                         tv.setAlpha(1);
-                        CommonDialog commonDialog = new CommonDialog(NewsDetail.this);
-                        commonDialog.show();
+                        if(isWordNull){
+                            Toast.makeText(NewsDetail.this, "抱歉，无法获得该文章的分词!", Toast.LENGTH_SHORT).show();
+                        }else{
+                            commonDialog.getMessage(favWords);
+                            commonDialog.show();
+                        }
                     }
 
                     @Override
@@ -375,6 +536,8 @@ public class NewsDetail extends AppCompatActivity {
                     // 未被收藏的新闻
                     mDatasource.insertNewFavNews(mFavNewsCandidate);
                     Log.d(TAG, "onClick: save favnews into database : " + mFavNewsCandidate.title);
+                    //Intent intent2 = new Intent(NewsDetail.this, CollectActivity.class);
+                    //startActivity(intent2);
                 } else {
                     Log.d(TAG, "onClick: already insert" + mFavNewsCandidate.title);
                     Toast.makeText(NewsDetail.this, "已被收藏，不要重复收藏", Toast.LENGTH_SHORT).show();
@@ -429,7 +592,10 @@ public class NewsDetail extends AppCompatActivity {
 
         int screenWidth = outMetrics.widthPixels;
         imgview.setMaxWidth(screenWidth);
-        imgview.setMaxHeight(screenWidth / 3 * 4);
+        imgview.setMaxHeight(screenWidth);
+//        if(imgview.getMaxHeight() > 230){
+//            imgview.setMaxHeight(230);
+//        }
 
         scrl.setOnTouchListener(new View.OnTouchListener() {
             @Override
