@@ -317,9 +317,10 @@ public class MainActivityNetworkVisit {
             }
         }).start();
     }
-
+    ArrayList<Feed> tmpp = new ArrayList<>();
     // 刷新数据
     public void getNewsAgain(){
+        tmpp.clear();
        new Thread(new Runnable() {
            @Override
            public void run() {
@@ -332,6 +333,17 @@ public class MainActivityNetworkVisit {
                    ls.addAll(list1);
                    ls.addAll(list2);
                    getFromExistedList(ls);
+               }
+
+               if(feedList.size() > 5){
+                   tmpp.addAll(feedList);
+                   feedList.clear();
+                   for(int i = 0; i < 5; i++){
+                       feedList.add(tmpp.get(i));
+                   }
+               }
+               for(Feed e : feedList){
+                   Log.i("sss", e.getTitle());
                }
                HandlerManager.getInstance().sendSuccessMessage();
            }
@@ -370,6 +382,8 @@ public class MainActivityNetworkVisit {
             } else{
                 boolean isValid = true;
                 Random rand = new Random();
+                Integer it = ls.size();
+                Log.i("sum", it.toString());
                 Integer randomIndex = rand.nextInt(ls.size());
                 Feed item = ls.get(randomIndex);
                 if(item.getTitle().equals("")){

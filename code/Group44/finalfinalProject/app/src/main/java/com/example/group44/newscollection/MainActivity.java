@@ -357,6 +357,12 @@ public class MainActivity extends AppCompatActivity
                 //view pager定位到当前item
                 view_pager.setCurrentItem(position);
             }
+
+            @Override
+            public void onLongClick(int position) {
+                // 处理长按事件
+
+            }
         });
         recyclerView = (RecyclerView)findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
