@@ -324,6 +324,8 @@ public class MainActivity extends AppCompatActivity
         mRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh(@NonNull RefreshLayout refreshLayout) {
+                myAdapter.clearItem();
+                MainActivityNetworkVisit.getInstance().getNews();
 //                List<String>  data = initDatas();
 //                Message message = new Message();
 //                message.what = 1 ;
