@@ -38,6 +38,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -165,11 +167,48 @@ public class MainActivity extends AppCompatActivity
         //获取NavigationView上的组件
         View v = navigationView.getHeaderView(0);
         TextView tvu = v.findViewById(R.id.gotUsername);
-        ImageView editView = v.findViewById(R.id.editBtn);
+        final ImageView editView = v.findViewById(R.id.editBtn);
         editView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                final View tv = v;
 
+                AlphaAnimation disappearAnimation = new AlphaAnimation(1, 0);
+                disappearAnimation.setDuration(400);
+                disappearAnimation.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        UserDialog ud = new UserDialog(MainActivity.this, new editView() {
+                            @Override
+                            public void edit(String str) {
+                                final NavigationView navigationView = findViewById(R.id.nav_view);
+                                //获取NavigationView上的组件
+                                View v = navigationView.getHeaderView(0);
+                                TextView tvu = v.findViewById(R.id.gotUsername);
+                                tvu.setText(str);
+                                // 缓存用户名
+                                SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+                                SharedPreferences.Editor editor=shared.edit();
+                                //第一次进入跳转
+                                editor.putString("user", tvu.getText().toString());
+                                Log.i("set username", tvu.getText().toString());
+                                editor.commit();
+                            }
+                        });
+                        ud.show();
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+                v.startAnimation(disappearAnimation);
             }
         });
         ImageView iv = v.findViewById(R.id.hostImg);
@@ -566,5 +605,9 @@ public class MainActivity extends AppCompatActivity
                         findViewById(R.id.drawer_layout).setVisibility(View.VISIBLE);
                     }
                 });
+    }
+
+    public interface editView {
+        void edit(String str);
     }
 }
