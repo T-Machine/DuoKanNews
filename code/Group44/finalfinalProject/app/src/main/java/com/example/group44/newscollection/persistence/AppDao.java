@@ -13,7 +13,7 @@ import java.util.List;
 public interface AppDao {
 
     // return all word frequency pair from database
-    @Query("SELECT * from word_frequency_table ORDER BY word ASC")
+    @Query("SELECT * from word_frequency_table ORDER BY frequency ASC")
     List<WordFrequency> getAllWordFrequencyPair();
 
     // wf for word frequency pair
@@ -25,6 +25,9 @@ public interface AppDao {
 
     @Query("DELETE FROM word_frequency_table")
     void deleteAll();
+
+    @Query("DELETE FROM word_frequency_table WHERE word == :word")
+    void deleteWord(String word);
 
     @Query("SELECT frequency FROM word_frequency_table WHERE word == :queryWord")
     Integer getFrequency(String queryWord);
@@ -38,6 +41,7 @@ public interface AppDao {
 
     @Delete
     void deleteFavNews(FavoriteNews... news);
+
 
     @Query("SELECT * from fav_news WHERE title == :title ORDER BY id ASC")
     List<FavoriteNews> getFavoriteNewsByTitle(String title);

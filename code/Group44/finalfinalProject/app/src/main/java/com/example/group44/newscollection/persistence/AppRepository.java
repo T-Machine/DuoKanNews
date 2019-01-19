@@ -2,6 +2,7 @@ package com.example.group44.newscollection.persistence;
 
 import android.content.Context;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -81,6 +82,13 @@ public class AppRepository {
         mAppDao.updateFrequency(newWf);
     }
 
+    /**
+     * 放回所有的单词和对应频数，返回的序列按照频数升序排列
+     * @return
+     */
+    public List<WordFrequency> getAllWFPair() {
+        return mAppDao.getAllWordFrequencyPair();
+    }
 
     // -------------------------------（收藏新闻相关接口）---------------------------------------------//
 
