@@ -40,7 +40,7 @@ public class LoadingDialog extends Dialog{
             public void run(){
                 while(flag){
                     try{
-                        Thread.sleep(300);
+                        Thread.sleep(100);
                     }catch (InterruptedException e){
                         e.printStackTrace();
                     }

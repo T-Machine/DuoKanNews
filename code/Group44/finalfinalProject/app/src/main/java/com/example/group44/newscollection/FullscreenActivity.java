@@ -433,9 +433,9 @@ public class FullscreenActivity extends AppCompatActivity {
                         editor.putString("collection", type);
                         editor.commit();
                         Log.i("select types", type);
-                        // 网络访问相关
-                        MainActivityNetworkVisit.getInstance().setContext(FullscreenActivity.this);
-                        MainActivityNetworkVisit.getInstance().setUrl(type);
+//                        // 网络访问相关
+//                        MainActivityNetworkVisit.getInstance().setContext(FullscreenActivity.this);
+//                        MainActivityNetworkVisit.getInstance().setUrl(type);
                         Log.i("send url to visit util", type);
                         // 跳转
                         Intent intent =new Intent(FullscreenActivity.this,MainActivity.class);

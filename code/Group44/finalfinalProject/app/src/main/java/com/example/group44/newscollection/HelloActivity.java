@@ -29,15 +29,7 @@ public class HelloActivity extends AppCompatActivity {
         // 结巴init
         Log.i("activity", "inHello");
         JiebaSegmenter.init(getApplicationContext());
-        SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(HelloActivity.this);
-        if(shared.getBoolean("isFirst", true)){
-        }else{
-            // 网络访问相关
-            String type = shared.getString("collection","1,2,3,4,5,6,7,8");
-            MainActivityNetworkVisit.getInstance().setContext(HelloActivity.this);
-            MainActivityNetworkVisit.getInstance().setUrl(type);
-            Log.i("send url to visit util", type);
-        }
+        
         // 渐变动画
         AlphaAnimation animAlpha = new AlphaAnimation(0,1);
         animAlpha.setFillAfter(true);
