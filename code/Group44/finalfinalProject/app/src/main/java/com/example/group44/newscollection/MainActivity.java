@@ -140,6 +140,44 @@ public class MainActivity extends AppCompatActivity
         View v = navigationView.getHeaderView(0);
         TextView tvu = v.findViewById(R.id.gotUsername);
         ImageView iv = v.findViewById(R.id.hostImg);
+        Menu view = navigationView.getMenu();
+
+        //set the menu listener
+        view.getItem(0).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Toast.makeText(MainActivity.this, "test", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        });
+
+        view.getItem(1).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Intent intent1 = new Intent(MainActivity.this, CollectActivity.class);
+                startActivity(intent1);
+                return false;
+            }
+        });
+
+        view.getItem(0).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Toast.makeText(MainActivity.this, "test", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        });
+
+        view.getItem(0).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Toast.makeText(MainActivity.this, "test", Toast.LENGTH_SHORT).show();
+                //调整字体大小
+                return false;
+            }
+        });
+
+
         iv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
