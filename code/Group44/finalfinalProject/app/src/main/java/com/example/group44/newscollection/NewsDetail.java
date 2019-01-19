@@ -160,7 +160,7 @@ public class NewsDetail extends AppCompatActivity {
         //------------------
         Intent intent = getIntent();
         //从intent取出bundle
-        Bundle bundle = intent.getBundleExtra("message");
+        final Bundle bundle = intent.getBundleExtra("message");
 
         commonDialog = new CommonDialog(NewsDetail.this);
         mFavNewsCandidate = UtilsFunction.newsGenerator(
@@ -176,7 +176,7 @@ public class NewsDetail extends AppCompatActivity {
         //调整字体大小
         mTextSize = bundle.getFloat("size");
         TextView tv1 = findViewById(R.id.paragraph);
-        tv1.setTextSize(tv1.getTextSize()*mTextSize*2/3);
+        //tv1.setTextSize(tv1.getTextSize()*mTextSize*2/3);
 
         // setup database
         mDatasource = new AppRepository(this);
@@ -567,6 +567,9 @@ public class NewsDetail extends AppCompatActivity {
                     Log.d(TAG, "onClick: save favnews into database : " + mFavNewsCandidate.title);
                     //Intent intent2 = new Intent(NewsDetail.this, CollectActivity.class);
                     //startActivity(intent2);
+                    Intent intentBroadcast = new Intent("favourite");
+                    intentBroadcast.putExtras(bundle);
+                    sendBroadcast(intentBroadcast);
                 } else {
                     Log.d(TAG, "onClick: already insert" + mFavNewsCandidate.title);
                     Toast.makeText(NewsDetail.this, "已被收藏，不要重复收藏", Toast.LENGTH_SHORT).show();

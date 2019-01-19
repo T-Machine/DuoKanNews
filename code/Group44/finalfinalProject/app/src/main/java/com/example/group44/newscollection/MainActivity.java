@@ -105,6 +105,10 @@ public class MainActivity extends AppCompatActivity
     RefreshLayout mRefreshLayout;             //下拉刷新
     ArrayList<Feed> feedList;
 
+    //设置的状态
+    //public static final String PREFERENCE_NAME = "SaveSetting";
+
+
     private Handler handler = new Handler() {
         public void handleMessage(Message msg) {
             // 获得数据
@@ -112,6 +116,7 @@ public class MainActivity extends AppCompatActivity
                 feedList = MainActivityNetworkVisit.getInstance().getFeedList();
                 processData();
                 MainActivityNetworkVisit.getInstance().getMost();
+
             } else{
                 // todo:无网络访问处理.
             }
@@ -131,6 +136,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         HandlerManager.getInstance().setHandler(handler);
+        final SharedPreferences sharedPreferences = getSharedPreferences ( "Setting", Context.MODE_PRIVATE );
 
         // 加载框---------------
         ld = new LoadingDialog(MainActivity.this);
@@ -179,6 +185,7 @@ public class MainActivity extends AppCompatActivity
         view.getItem(1).setCheckable(false);
         view.getItem(2).setCheckable(false);
         view.getItem(3).setCheckable(false);
+
         //set the menu listener
         view.getItem(0).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
@@ -208,14 +215,20 @@ public class MainActivity extends AppCompatActivity
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 Toast.makeText(MainActivity.this, "test", Toast.LENGTH_SHORT).show();
+                SharedPreferences.Editor editor = sharedPreferences.edit();
                 if(view.getItem(2).getTitle().toString().equals("开启推送模式")) {
                     view.getItem(2).setTitle("关闭推送模式");
                     /*
                     * 推送部分
                     * */
+                    editor.putBoolean("isBroad", true);
+                    editor.commit();
+                    sendBroadcast();
                 }
                 else {
                     view.getItem(2).setTitle("开启推送模式");
+                    editor.putBoolean("isBroad", false);
+                    editor.commit();
                 }
                 return false;
             }
@@ -365,6 +378,11 @@ public class MainActivity extends AppCompatActivity
         //----------------------------------
         //推荐内容部分
         //----------------------------------
+        boolean isBroad = sharedPreferences.getBoolean("isBroad", false);
+        if(isBroad) {
+            view.getItem(2).setTitle("关闭推送模式");
+            sendBroadcast();
+        }
 
     }
 
@@ -566,5 +584,21 @@ public class MainActivity extends AppCompatActivity
                         findViewById(R.id.drawer_layout).setVisibility(View.VISIBLE);
                     }
                 });
+    }
+
+    private void sendBroadcast() {
+        if(feedList != null) {
+            Bundle bundle1 = new Bundle();
+            bundle1.putString("url", feedList.get(0).getLink());
+            bundle1.putString("imgUrl",feedList.get(0).getKpic());
+            bundle1.putString("source",feedList.get(0).getSource());
+            bundle1.putString("title", feedList.get(0).getTitle());
+//                    bundle.putString("pubDate");
+            bundle1.putString("digest", feedList.get(0).getSummary());
+            bundle1.putFloat("size", mTextSize);
+            Intent intentBroadcast = new Intent("recommend");
+            intentBroadcast.putExtras(bundle1);
+            sendBroadcast(intentBroadcast);
+        }
     }
 }

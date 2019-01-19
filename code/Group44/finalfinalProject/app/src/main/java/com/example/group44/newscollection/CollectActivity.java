@@ -70,7 +70,6 @@ public class CollectActivity extends AppCompatActivity {
             public void convert(MyViewHolder holder, FavoriteNews s) {
                 ImageView img = holder.getView(R.id.iv_icon);
                 TextView title = holder.getView(R.id.tv_item_title);
-                title.setTextSize(title.getTextSize()*mTextsize/3);
                 TextView time = holder.getView(R.id.tv_item_date);
                 if(s.title != null){
                     title.setText(s.title);
