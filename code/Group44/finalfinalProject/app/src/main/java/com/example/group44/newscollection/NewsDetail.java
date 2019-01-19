@@ -179,9 +179,9 @@ public class NewsDetail extends AppCompatActivity {
         mTextSize = bundle.getFloat("size");
         oldManModel = bundle.getBoolean("oldManModel");
         TextView tv1 = findViewById(R.id.paragraph);
-<<<<<<< HEAD
+
         //tv1.setTextSize(tv1.getTextSize()*mTextSize*2/3);
-=======
+
         //改变字体大小
         //tv1.setTextSize(tv1.getTextSize()*mTextSize*2/3);
         if(oldManModel == false) {
@@ -190,7 +190,7 @@ public class NewsDetail extends AppCompatActivity {
         else {
             tv1.setTextSize(20);
         }
->>>>>>> dc62cf70fa97223f2f27c56f6d8d6b26b67f730f
+
 
         // setup database
         mDatasource = new AppRepository(this);

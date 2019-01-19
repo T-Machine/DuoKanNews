@@ -106,6 +106,7 @@ public class MainActivity extends AppCompatActivity
     ArrayList<Feed> feedList;
 
     //设置的状态
+    Boolean isBroad = false;
     //public static final String PREFERENCE_NAME = "SaveSetting";
 
 
@@ -117,6 +118,9 @@ public class MainActivity extends AppCompatActivity
                 processData();
                 MainActivityNetworkVisit.getInstance().getMost();
 
+                if(isBroad) {
+                    sendBroadcast();
+                }
             } else{
                 // todo:无网络访问处理.
                 final Dialog dialog = new Dialog(getApplication());
@@ -254,10 +258,12 @@ public class MainActivity extends AppCompatActivity
                 if(oldManModel == false) {
                     oldManModel = true;
                     view.getItem(3).setTitle("关闭老人模式");
+                    isBroad = true;
                 }
                 else {
                     oldManModel = false;
                     view.getItem(3).setTitle("开启老人模式");
+                    isBroad = false;
                 }
                 for (int i = 0; i < pages.size(); i++) {
                     View one = pages.get(i);
@@ -431,7 +437,8 @@ public class MainActivity extends AppCompatActivity
         //----------------------------------
         //推荐内容部分
         //----------------------------------
-        boolean isBroad = sharedPreferences.getBoolean("isBroad", false);
+
+        isBroad = sharedPreferences.getBoolean("isBroad", false);
         if(isBroad) {
             view.getItem(2).setTitle("关闭推送模式");
             sendBroadcast();
